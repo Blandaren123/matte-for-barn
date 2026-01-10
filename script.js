@@ -74,6 +74,7 @@ function startGame(selectedLevel) {
 // AVATAR PERSONLIGHET & ANIMATION
 // =====================
 function avatarPersonality() {
+  if (avatar === "😺") return "😸 Rätt på!";
   if (avatar === "🤖") return "Analyserar...";
   if (avatar === "🐲") return "🔥 Utmana mig!";
   if (avatar === "🦄") return "✨ Du klarar detta!";
@@ -125,8 +126,15 @@ function generateMath() {
 
   // Bossfråga var 10:e poäng
   if(score > 0 && score % 10 === 0) {
-    correctAnswer = Math.floor(Math.random() * 20 + 10); // svårare
-    document.getElementById("question").innerText = `👑 Bossfråga! Vad blir ${correctAnswer - 5} + 5?`;
+    if(level === "easy") {
+      correctAnswer = Math.floor(Math.random() * 20 + 10); // 10-29
+      document.getElementById("question").innerText = `👑 Bossfråga! Vad blir ${correctAnswer - 5} + 5?`;
+    } else {
+      a = Math.floor(Math.random() * 11) + 10; // 10-20
+      b = Math.floor(Math.random() * 11) + 10; // 10-20
+      correctAnswer = a * b;
+      document.getElementById("question").innerText = `👑 Bossfråga! ${a} × ${b} = ?`;
+    }
     return;
   }
 
@@ -162,7 +170,7 @@ function checkAnswer() {
     combo++;
     cheer(true);
 
-    if(combo > 2) {
+    if(combo >= 3) {
       score++;
       alert(`🔥 Combo x${combo}! Extra poäng!`);
       celebrate();
@@ -173,6 +181,7 @@ function checkAnswer() {
     combo = 0;
   }
 
+  document.getElementById("answer").value = "";
   document.getElementById("score").innerText = score;
   document.getElementById("levelBadge").innerText = getMedal();
   updateStars();
@@ -288,10 +297,12 @@ function generateTime() {
   minute = Math.random() > 0.5 ? 0 : 30;
 
   if(level === "easy") {
-    // 12-timmars AM/PM
+    // 12-timmars AM/PM för display
     hour = Math.floor(Math.random() * 12) + 1; // 1-12
     let ampm = Math.random() > 0.5 ? "AM" : "PM";
-    correctTime = `${hour}:${minute === 0 ? "00" : "30"} ${ampm}`;
+    // Konvertera till 24-timmars för input-matching
+    let hour24 = ampm === "AM" ? hour % 12 : (hour % 12) + 12;
+    correctTime = `${String(hour24).padStart(2, '0')}:${minute === 0 ? "00" : "30"}`;
     document.getElementById("timeQuestion").innerText =
       minute === 0
         ? `🕒 Klockan är ${hour} ${ampm} exakt`
@@ -299,7 +310,7 @@ function generateTime() {
   } else {
     // 24-timmars
     hour = Math.floor(Math.random() * 24); // 0-23
-    correctTime = `${hour}:${minute === 0 ? "00" : "30"}`;
+    correctTime = `${String(hour).padStart(2, '0')}:${minute === 0 ? "00" : "30"}`;
     document.getElementById("timeQuestion").innerText =
       minute === 0
         ? `🕒 Klockan är ${hour}:00`
@@ -310,9 +321,9 @@ function generateTime() {
 }
 
 function checkTime() {
-  const userTime = document.getElementById("timeAnswer").value.trim().toUpperCase();
+  const userTime = document.getElementById("timeAnswer").value.trim();
 
-  if(userTime === correctTime.toUpperCase()) {
+  if(userTime === correctTime) {
     document.getElementById("timeResult").innerText = "✅ Rätt tid!";
     avatarJump();
     scoreJump();
@@ -326,6 +337,7 @@ function checkTime() {
     combo = 0;
   }
 
+  document.getElementById("timeAnswer").value = "";
   generateTime();
 }
 
