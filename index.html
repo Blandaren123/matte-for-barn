@@ -15,14 +15,20 @@
 <button onclick="setPlayer()">Spara namn</button>
 <p id="savedName">Inget namn valt</p>
 
+<h3>Välj ditt kön</h3>
+<button onclick="setGender('girl')">👧 Tjej</button>
+<button onclick="setGender('boy')">👦 Kille</button>
+
 <h2>Välj din avatar</h2>
 <div id="avatars">
-  <span onclick="selectAvatar('😺')">😺</span>
-  <span onclick="selectAvatar('🤖')">🤖</span>
-  <span onclick="selectAvatar('🐲')">🐲</span>
-  <span onclick="selectAvatar('🦄')">🦄</span>
-  <span onclick="selectAvatar('🧙‍♂️')">🧙‍♂️</span>
-  <span onclick="selectAvatar('🐸')">🐸</span>
+  <button onclick="selectAvatar('😺')">😺 Katt</button>
+  <button onclick="selectAvatar('🐲')">🐲 Drake</button>
+  <button onclick="selectAvatar('🦄')">🦄 Enhörning</button>
+  <button onclick="selectAvatar('🧙‍♂️')">🧙‍♂️ Trollkarl</button>
+  <button onclick="selectAvatar('🤖')">🤖 Robot</button>
+  <button onclick="selectAvatar('🐧')">🐧 Pingvin</button>
+  <button onclick="selectAvatar('🐸')">🐸 Groda</button>
+  <button onclick="selectAvatar('🦊')">🦊 Räv</button>
 </div>
 
 <p id="chosenAvatar"></p>
