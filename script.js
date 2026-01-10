@@ -1,0 +1,143 @@
+let level = "";
+let correctAnswer = 0;
+let correctTime = "";
+let score = 0;
+
+let avatar = localStorage.getItem("avatar") || "😺";
+document.getElementById("chosenAvatar").innerText =
+  "Vald avatar: " + avatar;
+
+function selectAvatar(selected) {
+  avatar = selected;
+  localStorage.setItem("avatar", avatar);
+  document.getElementById("chosenAvatar").innerText =
+    "Vald avatar: " + avatar;
+}
+
+function startGame(selectedLevel) {
+  level = selectedLevel;
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game").classList.remove("hidden");
+  generateMath();
+  generateTime();
+}
+
+function avatarPersonality() {
+  if (avatar === "🤖") return "Analyserar...";
+  if (avatar === "🐲") return "🔥 Utmana mig!";
+  if (avatar === "🦄") return "✨ Du klarar detta!";
+  if (avatar === "🧙‍♂️") return "📜 Visdom är makt!";
+  return "😄 Kör!";
+}
+
+function cheer(success) {
+  document.getElementById("character").innerText = success
+    ? `${avatar} Grymt jobbat!! 🎉`
+    : `${avatar} Nästan! Försök igen 💪`;
+}
+
+function getMedal() {
+  if (score >= 15) return "🥇 Guld";
+  if (score >= 10) return "🥈 Silver";
+  if (score >= 5) return "🥉 Brons";
+  return "🎈 Nybörjare";
+}
+
+function updateStars() {
+  document.getElementById("stars").innerText =
+    "⭐".repeat(score);
+}
+
+function generateMath() {
+  document.getElementById("character").innerText =
+    `${avatar} ${avatarPersonality()}`;
+
+  let a, b;
+
+  if (level === "easy") {
+    a = Math.floor(Math.random() * 10);
+    b = Math.floor(Math.random() * 10);
+    correctAnswer = a + b;
+    document.getElementById("question").innerText =
+      `${a} + ${b} = ?`;
+  } else {
+    if (Math.random() > 0.5) {
+      correctAnswer = 12 / 3;
+      document.getElementById("question").innerText =
+        "🍎 Lisa har 12 äpplen och delar dem på 3 barn. Hur många får varje barn?";
+      return;
+    }
+    a = Math.floor(Math.random() * 10);
+    b = Math.floor(Math.random() * 10);
+    correctAnswer = a * b;
+    document.getElementById("question").innerText =
+      `${a} × ${b} = ?`;
+  }
+}
+
+function checkAnswer() {
+  const userAnswer = Number(document.getElementById("answer").value);
+
+  if (userAnswer === correctAnswer) {
+    score++;
+    document.getElementById("correctSound").play();
+    cheer(true);
+  } else {
+    document.getElementById("wrongSound").play();
+    cheer(false);
+  }
+
+  document.getElementById("score").innerText = score;
+  document.getElementById("levelBadge").innerText = getMedal();
+  updateStars();
+  generateMath();
+}
+
+function generateTime() {
+  let hour = Math.floor(Math.random() * 12) + 1;
+  let minute = Math.random() > 0.5 ? 0 : 30;
+
+  correctTime = `${hour}:${minute === 0 ? "00" : "30"}`;
+
+  document.getElementById("timeQuestion").innerText =
+    minute === 0
+      ? `🕒 Klockan är ${hour} exakt`
+      : `🕒 Klockan är halv ${hour + 1}`;
+
+  drawClock(hour, minute);
+}
+
+function checkTime() {
+  const userTime = document.getElementById("timeAnswer").value;
+  document.getElementById("timeResult").innerText =
+    userTime === correctTime
+      ? "✅ Rätt tid!"
+      : `❌ Rätt svar är ${correctTime}`;
+  generateTime();
+}
+
+function drawClock(hour, minute) {
+  const canvas = document.getElementById("clock");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, 200, 200);
+
+  ctx.beginPath();
+  ctx.arc(100, 100, 90, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(100, 100);
+  ctx.lineTo(
+    100 + 40 * Math.cos((hour % 12) * 30 * Math.PI / 180 - Math.PI / 2),
+    100 + 40 * Math.sin((hour % 12) * 30 * Math.PI / 180 - Math.PI / 2)
+  );
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(100, 100);
+  ctx.lineTo(
+    100 + 70 * Math.cos(minute * 6 * Math.PI / 180 - Math.PI / 2),
+    100 + 70 * Math.sin(minute * 6 * Math.PI / 180 - Math.PI / 2)
+  );
+  ctx.stroke();
+}

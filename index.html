@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Matte & Tid för barn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>📘 Matte & Tid</h1>
+
+<h2>Välj din avatar</h2>
+<div id="avatars">
+  <span onclick="selectAvatar('😺')">😺</span>
+  <span onclick="selectAvatar('🤖')">🤖</span>
+  <span onclick="selectAvatar('🐲')">🐲</span>
+  <span onclick="selectAvatar('🦄')">🦄</span>
+  <span onclick="selectAvatar('🧙‍♂️')">🧙‍♂️</span>
+  <span onclick="selectAvatar('🐸')">🐸</span>
+</div>
+
+<p id="chosenAvatar"></p>
+
+<p>Välj ålder:</p>
+<div id="menu">
+  <button onclick="startGame('easy')">8–9 år</button>
+  <button onclick="startGame('medium')">10–11 år</button>
+</div>
+
+<div id="game" class="hidden">
+  <p id="character"></p>
+  
+  <h2>🔢 Matematik</h2>
+  <p id="question"></p>
+  <input type="number" id="answer" placeholder="Ditt svar">
+  <button onclick="checkAnswer()">Kontrollera</button>
+  
+  <h2>🕒 Klocka</h2>
+  <p id="timeQuestion"></p>
+  <canvas id="clock" width="200" height="200"></canvas>
+  <input type="time" id="timeAnswer" placeholder="HH:MM">
+  <button onclick="checkTime()">Kontrollera tid</button>
+  <p id="timeResult"></p>
+  
+  <h2>📊 Framgång</h2>
+  <p>⭐ Poäng: <span id="score">0</span></p>
+  <p id="stars"></p>
+  <p>🏆 <span id="levelBadge"></span></p>
+</div>
+
+<audio id="correctSound" src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=="></audio>
+<audio id="wrongSound" src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=="></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
