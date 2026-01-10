@@ -10,6 +10,11 @@
 
 <h1>📘 Matte & Tid</h1>
 
+<h3>Skriv ditt namn</h3>
+<input type="text" id="playerName" placeholder="Ditt namn">
+<button onclick="setPlayer()">Spara namn</button>
+<p id="savedName">Inget namn valt</p>
+
 <h2>Välj din avatar</h2>
 <div id="avatars">
   <span onclick="selectAvatar('😺')">😺</span>
@@ -21,6 +26,16 @@
 </div>
 
 <p id="chosenAvatar"></p>
+
+<h3>Välj tillbehör</h3>
+<div id="accessories">
+  <span onclick="selectAccessory('🎩')">🎩</span>
+  <span onclick="selectAccessory('🕶️')">🕶️</span>
+  <span onclick="selectAccessory('⚔️')">⚔️</span>
+  <span onclick="selectAccessory('🪄')">🪄</span>
+</div>
+
+<p id="chosenAccessory">Valt tillbehör: Ingen</p>
 
 <p>Välj ålder:</p>
 <div id="menu">

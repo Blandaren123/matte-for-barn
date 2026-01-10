@@ -2,6 +2,14 @@ let level = "";
 let correctAnswer = 0;
 let correctTime = "";
 let score = 0;
+let accessory = localStorage.getItem("accessory") || "";
+let player = localStorage.getItem("playerName") || "";
+
+const achievements = [
+  { score: 5, name: "Första steget", unlocked: false },
+  { score: 10, name: "Silverstjärna", unlocked: false },
+  { score: 15, name: "Guldmästare", unlocked: false }
+];
 
 let avatar = localStorage.getItem("avatar") || "😺";
 document.getElementById("chosenAvatar").innerText =
@@ -13,6 +21,53 @@ function selectAvatar(selected) {
   document.getElementById("chosenAvatar").innerText =
     "Vald avatar: " + avatar;
 }
+
+function selectAccessory(selected) {
+  accessory = selected;
+  localStorage.setItem("accessory", accessory);
+  document.getElementById("chosenAccessory").innerText =
+    "Valt tillbehör: " + (accessory || "Ingen");
+}
+
+function setPlayer() {
+  const nameInput = document.getElementById("playerName").value;
+  if(nameInput.trim() === "") return;
+  player = nameInput;
+  localStorage.setItem("playerName", player);
+  document.getElementById("savedName").innerText = "Hej " + player + "!";
+}
+
+const checkAchievements = () => {
+  achievements.forEach(a => {
+    if (score >= a.score && !a.unlocked) {
+      a.unlocked = true;
+      alert(`🏆 Achievement låst upp: ${a.name}!`);
+      saveAchievements();
+    }
+  });
+};
+
+function saveAchievements() {
+  localStorage.setItem("achievements", JSON.stringify(achievements));
+}
+
+function loadAchievements() {
+  const stored = localStorage.getItem("achievements");
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    parsed.forEach((a, i) => achievements[i].unlocked = a.unlocked);
+  }
+}
+
+window.onload = () => {
+  loadAchievements();
+  document.getElementById("chosenAvatar").innerText =
+    "Vald avatar: " + (localStorage.getItem("avatar") || "😺");
+  document.getElementById("chosenAccessory").innerText =
+    "Valt tillbehör: " + (localStorage.getItem("accessory") || "Ingen");
+  document.getElementById("savedName").innerText =
+    player ? "Hej " + player + "!" : "Inget namn valt";
+};
 
 function startGame(selectedLevel) {
   level = selectedLevel;
@@ -32,8 +87,8 @@ function avatarPersonality() {
 
 function cheer(success) {
   document.getElementById("character").innerText = success
-    ? `${avatar} Grymt jobbat!! 🎉`
-    : `${avatar} Nästan! Försök igen 💪`;
+    ? `${avatar}${accessory} Grymt jobbat!! 🎉`
+    : `${avatar}${accessory} Nästan! Försök igen 💪`;
 }
 
 function getMedal() {
@@ -90,6 +145,7 @@ function checkAnswer() {
   document.getElementById("score").innerText = score;
   document.getElementById("levelBadge").innerText = getMedal();
   updateStars();
+  checkAchievements();
   generateMath();
 }
 
