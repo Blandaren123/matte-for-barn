@@ -594,6 +594,9 @@ function checkAnswer(providedAnswer) {
   updateStars();
   checkAchievements();
   
+  // Dölj flerval innan nästa fråga genereras
+  hideMultipleChoice();
+  
   if(testMode) {
     nextTestQuestion();
   } else {
