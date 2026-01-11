@@ -43,6 +43,27 @@
 
 <p id="chosenAccessory">Valt tillbehör: Ingen</p>
 
+<h3>Välj husdjur</h3>
+<div id="pets">
+  <span onclick="selectPet('🐶')">🐶</span>
+  <span onclick="selectPet('🐱')">🐱</span>
+  <span onclick="selectPet('🐹')">🐹</span>
+  <span onclick="selectPet('🦜')">🦜</span>
+  <span onclick="selectPet('🐢')">🐢</span>
+  <span onclick="selectPet('🦎')">🦎</span>
+</div>
+
+<p id="chosenPet">Inget husdjur valt</p>
+
+<h3>Välj tema</h3>
+<div id="themes">
+  <button onclick="selectTheme('default')">🌈 Standard</button>
+  <button onclick="selectTheme('space')">🌌 Rymden</button>
+  <button onclick="selectTheme('sunset')">🌅 Solnedgång</button>
+  <button onclick="selectTheme('forest')">🌲 Skog</button>
+  <button onclick="selectTheme('candy')">🍭 Godis</button>
+</div>
+
 <p>Välj ålder:</p>
 <div id="menu">
   <button onclick="startGame('easy')">8–9 år</button>
@@ -51,6 +72,18 @@
 
 <div id="game" class="hidden">
   <p id="character"></p>
+  
+  <div id="stats">
+    <p>🏆 Rekord: <span id="highscoreDisplay">0</span></p>
+    <p>🔥 Streak: <span id="streakDisplay">0</span></p>
+  </div>
+  
+  <h2>🎁 Power-ups</h2>
+  <div id="powerups">
+    <button onclick="usePowerup('skip')">⏭️ Hoppa över (<span id="powerupSkip">1</span>)</button>
+    <button onclick="usePowerup('halfhalf')">💡 Tips (<span id="powerupHalf">1</span>)</button>
+    <button onclick="usePowerup('extraTime')">⏰ Bonus (<span id="powerupTime">1</span>)</button>
+  </div>
   
   <h2>🔢 Matematik</h2>
   <p id="question"></p>
