@@ -64,10 +64,12 @@
   <button onclick="selectTheme('candy')">🍭 Godis</button>
 </div>
 
-<p>Välj ålder:</p>
+<h3>Vad vill du träna på?</h3>
 <div id="menu">
-  <button onclick="startGame('easy')">8–9 år</button>
-  <button onclick="startGame('medium')">10–11 år</button>
+  <button onclick="startGame('math-easy')">🔢 Matte - Lätt</button>
+  <button onclick="startGame('math-hard')">🔢 Matte - Svår</button>
+  <button onclick="startGame('clock-easy')">🕒 Klockan - Lätt</button>
+  <button onclick="startGame('clock-hard')">🕒 Klockan - Svår</button>
 </div>
 
 <div id="game" class="hidden">
@@ -85,17 +87,23 @@
     <button onclick="usePowerup('extraTime')">⏰ Bonus (<span id="powerupTime">1</span>)</button>
   </div>
   
-  <h2>🔢 Matematik</h2>
-  <p id="question"></p>
-  <input type="number" id="answer" placeholder="Ditt svar">
-  <button onclick="checkAnswer()">Kontrollera</button>
+  <!-- MATTE SEKTION -->
+  <div id="mathSection" class="hidden">
+    <h2>🔢 Matematik</h2>
+    <p id="question"></p>
+    <input type="number" id="answer" placeholder="Ditt svar">
+    <button onclick="checkAnswer()">Kontrollera</button>
+  </div>
   
-  <h2>🕒 Klocka</h2>
-  <p id="timeQuestion"></p>
-  <canvas id="clock" width="200" height="200"></canvas>
-  <input type="time" id="timeAnswer" placeholder="HH:MM">
-  <button onclick="checkTime()">Kontrollera tid</button>
-  <p id="timeResult"></p>
+  <!-- KLOCKA SEKTION -->
+  <div id="clockSection" class="hidden">
+    <h2>🕒 Klockan</h2>
+    <p id="timeQuestion"></p>
+    <canvas id="clock" width="200" height="200"></canvas>
+    <input type="time" id="timeAnswer" placeholder="HH:MM">
+    <button onclick="checkTime()">Kontrollera tid</button>
+    <p id="timeResult"></p>
+  </div>
   
   <h2>📊 Framgång</h2>
   <p>⭐ Poäng: <span id="score">0</span></p>

@@ -1,6 +1,7 @@
 // =====================
 // GLOBALA VARIABLER
 // =====================
+let gameMode = ""; // math-easy, math-hard, clock-easy, clock-hard
 let level = "";
 let correctAnswer = 0;
 let correctTime = "";
@@ -172,12 +173,24 @@ function applyTheme(selectedTheme) {
 // =====================
 // SPELSTART
 // =====================
-function startGame(selectedLevel) {
-  level = selectedLevel;
+function startGame(mode) {
+  gameMode = mode;
+  level = mode.includes('easy') ? 'easy' : 'hard';
+  
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").classList.remove("hidden");
-  generateMath();
-  generateTime();
+  
+  // Visa rätt sektion baserat på läge
+  if(mode.startsWith('math')) {
+    document.getElementById("mathSection").classList.remove("hidden");
+    document.getElementById("clockSection").classList.add("hidden");
+    generateMath();
+  } else if(mode.startsWith('clock')) {
+    document.getElementById("clockSection").classList.remove("hidden");
+    document.getElementById("mathSection").classList.add("hidden");
+    generateTime();
+  }
+  
   changeBackground();
   questionStartTime = Date.now();
   updatePowerupDisplay();
@@ -253,17 +266,19 @@ function generateMath() {
   }
 
   if (level === "easy") {
-    // Ordfrågor även för 8-9 år!
+    // LÄTT: Enklare frågor, addition, subtraktion, enkel geometri
     const easyWordProblems = [
       { text: "🍬 Du har 5 karameller och får 3 till. Hur många har du nu?", answer: 5 + 3 },
       { text: "🐶 På lekplatsen finns 7 barn. 2 barn går hem. Hur många är kvar?", answer: 7 - 2 },
       { text: "🎨 Du har 10 färgpennor. 4 är röda, resten är blå. Hur många är blå?", answer: 10 - 4 },
       { text: "⚽ Det finns 6 bollar. Du får 2 bollar till. Hur många bollar finns det?", answer: 6 + 2 },
       { text: "🔺 En triangel har hur många hörn?", answer: 3 },
-      { text: "🔲 En fyrkant har hur många sidor?", answer: 4 }
+      { text: "🔲 En fyrkant har hur många sidor?", answer: 4 },
+      { text: "🍎 Du har 8 äpplen och äter 3. Hur många har du kvar?", answer: 8 - 3 },
+      { text: "🐱 Det finns 4 katter. Varje katt har 4 ben. Hur många ben totalt?", answer: 4 * 4 }
     ];
     
-    if (Math.random() > 0.4) {
+    if (Math.random() > 0.3) {
       const problem = easyWordProblems[Math.floor(Math.random() * easyWordProblems.length)];
       correctAnswer = problem.answer;
       document.getElementById("question").innerText = problem.text;
@@ -273,11 +288,11 @@ function generateMath() {
     a = Math.floor(Math.random() * 10);
     b = Math.floor(Math.random() * 10);
     correctAnswer = a + b;
-    document.getElementById("question").innerText =
-      `${a} + ${b} = ?`;
+    document.getElementById("question").innerText = `${a} + ${b} = ?`;
+    
   } else {
-    // Ordfrågor för variation - UTÖKAD
-    const wordProblems = [
+    // SVÅR: Multiplikation, division, svårare ordfrågor
+    const hardWordProblems = [
       { text: "🍎 Lisa har 12 äpplen och delar dem på 3 barn. Hur många får varje barn?", answer: 12 / 3 },
       { text: "🍕 En pizza har 8 bitar. Om 4 kompisar delar lika, hur många bitar får var och en?", answer: 8 / 4 },
       { text: "🚗 Det finns 15 bilar på en parkeringsplats. 5 bilar på varje rad. Hur många rader finns det?", answer: 15 / 5 },
@@ -295,16 +310,16 @@ function generateMath() {
     ];
     
     if (Math.random() > 0.3) {
-      const problem = wordProblems[Math.floor(Math.random() * wordProblems.length)];
+      const problem = hardWordProblems[Math.floor(Math.random() * hardWordProblems.length)];
       correctAnswer = problem.answer;
       document.getElementById("question").innerText = problem.text;
       return;
     }
+    
     a = Math.floor(Math.random() * 10);
     b = Math.floor(Math.random() * 10);
     correctAnswer = a * b;
-    document.getElementById("question").innerText =
-      `${a} × ${b} = ?`;
+    document.getElementById("question").innerText = `${a} × ${b} = ?`;
   }
 }
 
@@ -526,12 +541,11 @@ function numberToText(num) {
 function generateTime() {
   let hour, minute;
   
-  // Fler tidpunkter: 00, 15, 30, 45
-  const minutes = [0, 15, 30, 45];
-  minute = minutes[Math.floor(Math.random() * minutes.length)];
-
   if(level === "easy") {
-    // 12-timmars för barn
+    // LÄTT: Endast hel och halv timme
+    const minutes = [0, 30];
+    minute = minutes[Math.floor(Math.random() * minutes.length)];
+    
     hour = Math.floor(Math.random() * 12) + 1; // 1-12
     let isMorning = Math.random() > 0.5;
     let timeOfDay = isMorning ? "på morgonen" : "på eftermiddagen";
@@ -547,15 +561,15 @@ function generateTime() {
       timeText = `🕒 Klockan är ${hourText} ${timeOfDay}`;
     } else if(minute === 30) {
       timeText = `🕒 Klockan är halv ${numberToText(hour + 1)} ${timeOfDay}`;
-    } else if(minute === 15) {
-      timeText = `🕒 Klockan är kvart över ${hourText} ${timeOfDay}`;
-    } else if(minute === 45) {
-      timeText = `🕒 Klockan är kvart i ${numberToText(hour + 1)} ${timeOfDay}`;
     }
     
     document.getElementById("timeQuestion").innerText = timeText;
+    
   } else {
-    // 24-timmars med text och tidsgåtor
+    // SVÅR: Kvart över, kvart i, och tidsgåtor
+    const minutes = [0, 15, 30, 45];
+    minute = minutes[Math.floor(Math.random() * minutes.length)];
+    
     hour = Math.floor(Math.random() * 24); // 0-23
     correctTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     
