@@ -704,18 +704,18 @@ function generateTime() {
       let timeText = "";
       
       if(minute === 0) {
-        timeText = `🕒 Klockan är ${hourText} ${timeOfDay} (svara i 24-timmarsformat: ${hour}:00)`;
+        timeText = `🕒 Klockan är ${hourText} ${timeOfDay}`;
       } else if(minute === 30) {
         let nextHour12 = ((hour % 12) + 1) % 12 || 12;
-        timeText = `🕒 Klockan är halv ${numberToText(nextHour12)} ${timeOfDay} (svara i 24-timmarsformat)`;
+        timeText = `🕒 Klockan är halv ${numberToText(nextHour12)} ${timeOfDay}`;
       } else if(minute === 15) {
-        timeText = `🕒 Klockan är kvart över ${hourText} ${timeOfDay} (svara i 24-timmarsformat)`;
+        timeText = `🕒 Klockan är kvart över ${hourText} ${timeOfDay}`;
       } else if(minute === 45) {
         let nextHour12 = ((hour % 12) + 1) % 12 || 12;
-        timeText = `🕒 Klockan är kvart i ${numberToText(nextHour12)} ${timeOfDay} (svara i 24-timmarsformat)`;
+        timeText = `🕒 Klockan är kvart i ${numberToText(nextHour12)} ${timeOfDay}`;
       }
       
-      document.getElementById("timeQuestion").innerText = timeText;
+      document.getElementById("timeQuestion").innerText = timeText + " (Svara i 24-timmarsformat HH:MM)";
     }
   }
 
