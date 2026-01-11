@@ -316,7 +316,34 @@ function generateMath() {
       { text: "🔢 Vad blir nästa? 3, 6, 9, 12, ?", answer: 15, type: "patterns", explanation: "3-gångertabellen: 3, 6, 9, 12, 15." },
       { text: "🔢 Fyll i det saknade: 0, 5, 10, ?, 20", answer: 15, type: "patterns", explanation: "Räkna i 5-steg: 0, 5, 10, 15, 20." }
     ];
-
+    
+    if (Math.random() > 0.3) {
+      const problem = easyWordProblems[Math.floor(Math.random() * easyWordProblems.length)];
+      correctAnswer = problem.answer;
+      currentQuestionType = problem.type;
+      currentExplanation = problem.explanation;
+      document.getElementById("question").innerText = problem.text;
+      
+      // Flerval (50% av frågorna)
+      if(Math.random() > 0.5) {
+        generateMultipleChoice(problem.answer);
+      } else {
+        hideMultipleChoice();
+      }
+      return;
+    }
+    
+    a = Math.floor(Math.random() * 10);
+    b = Math.floor(Math.random() * 10);
+    correctAnswer = a + b;
+    currentQuestionType = "addition";
+    currentExplanation = `${a} + ${b} = ${correctAnswer}`;
+    document.getElementById("question").innerText = `${a} + ${b} = ?`;
+    hideMultipleChoice();
+    
+  } else if (level === "medium") {
+    // MEDEL: 2-siffriga tal, gångertabeller 1-10, enklare division
+    
     const mediumWordProblems = [
       { text: "🍎 Du har 34 äpplen och köper 28 till. Hur många har du nu?", answer: 62, type: "addition", explanation: "34 + 28 = 62. Vi adderar de två talen." },
       { text: "🚗 Det finns 56 bilar i parkeringen. 29 kör iväg. Hur många är kvar?", answer: 27, type: "subtraction", explanation: "56 - 29 = 27. Vi subtraherar." },
