@@ -17,7 +17,6 @@ let multipleChoiceOptions = []; // För flerval
 
 let avatar = localStorage.getItem("avatar") || "😺";
 let accessory = localStorage.getItem("accessory") || "";
-let player = localStorage.getItem("playerName") || "";
 let pet = localStorage.getItem("pet") || ""; // husdjur
 let theme = localStorage.getItem("theme") || "default";
 
@@ -69,8 +68,6 @@ window.onload = () => {
     "Vald avatar: " + avatar;
   document.getElementById("chosenAccessory").innerText =
     "Valt tillbehör: " + (accessory || "Ingen");
-  document.getElementById("savedName").innerText =
-    player ? `Hej ${player}!` : "Inget namn valt";
   document.getElementById("highscoreDisplay").innerText = highscore;
   if(pet) {
     document.getElementById("chosenPet").innerText = "Ditt husdjur: " + pet;
@@ -130,15 +127,6 @@ function selectAccessory(selected) {
       span.classList.remove('selected');
     }
   });
-}
-
-function setPlayer() {
-  const nameInput = document.getElementById("playerName").value;
-  if (nameInput.trim() === "") return;
-  player = nameInput;
-  localStorage.setItem("playerName", player);
-  document.getElementById("savedName").innerText =
-    `Hej ${player}!`;
 }
 
 function selectPet(selected) {
@@ -671,31 +659,46 @@ function generateTime() {
     document.getElementById("timeQuestion").innerText = timeText;
     
   } else {
-    // SVÅR: Kvart över, kvart i, och tidsgåtor
+    // SVÅR: Kvart över, kvart i, och tidsgåtor med 24-timmars tid
     const minutes = [0, 15, 30, 45];
     minute = minutes[Math.floor(Math.random() * minutes.length)];
     
     hour = Math.floor(Math.random() * 24); // 0-23
     correctTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     
+    // Bestäm tid på dygnet
+    let timeOfDay = "";
+    if(hour >= 6 && hour < 12) timeOfDay = "på morgonen";
+    else if(hour >= 12 && hour < 18) timeOfDay = "på eftermiddagen";
+    else if(hour >= 18 && hour < 22) timeOfDay = "på kvällen";
+    else timeOfDay = "på natten";
+    
     // Ibland tidsgåtor!
     if(Math.random() > 0.7 && minute === 0) {
       let hourBefore = (hour - 2 + 24) % 24;
       correctTime = `${String(hour).padStart(2, '0')}:00`;
+      let timeOfDayBefore = "";
+      if(hourBefore >= 6 && hourBefore < 12) timeOfDayBefore = "på morgonen";
+      else if(hourBefore >= 12 && hourBefore < 18) timeOfDayBefore = "på eftermiddagen";
+      else if(hourBefore >= 18 && hourBefore < 22) timeOfDayBefore = "på kvällen";
+      else timeOfDayBefore = "på natten";
       document.getElementById("timeQuestion").innerText = 
-        `🧩 Om klockan var ${numberToText(hourBefore)} för 2 timmar sedan, vad är klockan nu?`;
+        `🧩 Om klockan var ${hourBefore}:00 ${timeOfDayBefore} för 2 timmar sedan, vad är klockan nu? (svara i 24-timmarsformat)`;
     } else {
-      let hourText = numberToText(hour);
+      let hour12 = hour % 12 || 12; // för text (1-12)
+      let hourText = numberToText(hour12);
       let timeText = "";
       
       if(minute === 0) {
-        timeText = `🕒 Klockan är ${hourText}`;
+        timeText = `🕒 Klockan är ${hourText} ${timeOfDay} (svara i 24-timmarsformat: ${hour}:00)`;
       } else if(minute === 30) {
-        timeText = `🕒 Klockan är halv ${numberToText((hour + 1) % 24)}`;
+        let nextHour12 = ((hour % 12) + 1) % 12 || 12;
+        timeText = `🕒 Klockan är halv ${numberToText(nextHour12)} ${timeOfDay} (svara i 24-timmarsformat)`;
       } else if(minute === 15) {
-        timeText = `🕒 Klockan är kvart över ${hourText}`;
+        timeText = `🕒 Klockan är kvart över ${hourText} ${timeOfDay} (svara i 24-timmarsformat)`;
       } else if(minute === 45) {
-        timeText = `🕒 Klockan är kvart i ${numberToText((hour + 1) % 24)}`;
+        let nextHour12 = ((hour % 12) + 1) % 12 || 12;
+        timeText = `🕒 Klockan är kvart i ${numberToText(nextHour12)} ${timeOfDay} (svara i 24-timmarsformat)`;
       }
       
       document.getElementById("timeQuestion").innerText = timeText;
