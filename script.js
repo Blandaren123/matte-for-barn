@@ -1,7 +1,7 @@
 // =====================
 // GLOBALA VARIABLER
 // =====================
-let gameMode = ""; // math-easy, math-hard, clock-easy, clock-hard
+let gameMode = ""; // math-easy, math-hard, clock-easy, clock-hard, test-mode
 let level = "";
 let correctAnswer = 0;
 let correctTime = "";
@@ -11,6 +11,9 @@ let streak = 0; // antal rätt i rad
 let highscore = localStorage.getItem("highscore") || 0;
 let questionStartTime = 0;
 let fastAnswers = 0; // antal snabba svar
+let currentQuestionType = ""; // För att spåra kategori
+let currentExplanation = ""; // Förklaring till svaret
+let multipleChoiceOptions = []; // För flerval
 
 let avatar = localStorage.getItem("avatar") || "😺";
 let accessory = localStorage.getItem("accessory") || "";
@@ -26,11 +29,43 @@ let powerups = {
   extraTime: 1
 };
 
+// Progressionsspårning
+let progressStats = JSON.parse(localStorage.getItem("progressStats")) || {
+  addition: { correct: 0, total: 0 },
+  subtraction: { correct: 0, total: 0 },
+  multiplication: { correct: 0, total: 0 },
+  division: { correct: 0, total: 0 },
+  fractions: { correct: 0, total: 0 },
+  decimals: { correct: 0, total: 0 },
+  geometry: { correct: 0, total: 0 },
+  units: { correct: 0, total: 0 },
+  money: { correct: 0, total: 0 },
+  time: { correct: 0, total: 0 }
+};
+
+// Provläge
+let testMode = false;
+let testQuestions = [];
+let testCurrentQuestion = 0;
+let testTimeLimit = 30 * 60; // 30 minuter
+let testTimer = null;
+let testStartTime = 0;
+
+// Dagens utmaning
+let dailyChallenge = JSON.parse(localStorage.getItem("dailyChallenge")) || {
+  date: new Date().toDateString(),
+  completed: false,
+  streak: 0
+};
+
 // =====================
 // INIT
 // =====================
 window.onload = () => {
   loadAchievements();
+  checkDailyChallenge();
+  updateProgressDisplay();
+  
   document.getElementById("chosenAvatar").innerText =
     "Vald avatar: " + avatar;
   document.getElementById("chosenAccessory").innerText =
@@ -268,69 +303,107 @@ function generateMath() {
   if (level === "easy") {
     // LÄTT: Enklare frågor, addition, subtraktion, enkel geometri
     const easyWordProblems = [
-      { text: "🍬 Du har 5 karameller och får 3 till. Hur många har du nu?", answer: 5 + 3 },
-      { text: "🐶 På lekplatsen finns 7 barn. 2 barn går hem. Hur många är kvar?", answer: 7 - 2 },
-      { text: "🎨 Du har 10 färgpennor. 4 är röda, resten är blå. Hur många är blå?", answer: 10 - 4 },
-      { text: "⚽ Det finns 6 bollar. Du får 2 bollar till. Hur många bollar finns det?", answer: 6 + 2 },
-      { text: "🔺 En triangel har hur många hörn?", answer: 3 },
-      { text: "🔲 En fyrkant har hur många sidor?", answer: 4 },
-      { text: "🍎 Du har 8 äpplen och äter 3. Hur många har du kvar?", answer: 8 - 3 },
-      { text: "🐱 Det finns 4 katter. Varje katt har 4 ben. Hur många ben totalt?", answer: 4 * 4 }
+      { text: "🍬 Du har 5 karameller och får 3 till. Hur många har du nu?", answer: 5 + 3, type: "addition", explanation: "5 + 3 = 8. Vi lägger ihop de karameller du hade och de du fick." },
+      { text: "🐶 På lekplatsen finns 7 barn. 2 barn går hem. Hur många är kvar?", answer: 7 - 2, type: "subtraction", explanation: "7 - 2 = 5. Vi tar bort 2 från 7." },
+      { text: "🎨 Du har 10 färgpennor. 4 är röda, resten är blå. Hur många är blå?", answer: 10 - 4, type: "subtraction", explanation: "10 - 4 = 6. Totalt minus röda = blå pennor." },
+      { text: "⚽ Det finns 6 bollar. Du får 2 bollar till. Hur många bollar finns det?", answer: 6 + 2, type: "addition", explanation: "6 + 2 = 8. Vi lägger ihop bollarna." },
+      { text: "🔺 En triangel har hur många hörn?", answer: 3, type: "geometry", explanation: "En triangel har alltid 3 hörn." },
+      { text: "🔲 En fyrkant har hur många sidor?", answer: 4, type: "geometry", explanation: "En fyrkant har 4 sidor." },
+      { text: "🍎 Du har 8 äpplen och äter 3. Hur många har du kvar?", answer: 8 - 3, type: "subtraction", explanation: "8 - 3 = 5. Vi subtraherar det du åt." },
+      { text: "🐱 Det finns 4 katter. Varje katt har 4 ben. Hur många ben totalt?", answer: 4 * 4, type: "multiplication", explanation: "4 × 4 = 16. Varje katt har 4 ben, så 4 katter = 16 ben." },
+      { text: "📏 Hur många cm är 1 meter?", answer: 100, type: "units", explanation: "1 meter = 100 centimeter." },
+      { text: "⏰ Hur många minuter är en halv timme?", answer: 30, type: "time", explanation: "En timme = 60 minuter. Halva = 30 minuter." },
+      { text: "💰 Du har 20 kr och köper godis för 5 kr. Hur mycket får du tillbaka?", answer: 15, type: "money", explanation: "20 - 5 = 15 kr." },
+      { text: "🍕 Halva pizzan är uppäten. Hur stor del är kvar? (svara 2 för 1/2)", answer: 2, type: "fractions", explanation: "Om halva (1/2) är uppäten, är halva (1/2 = 2 i nämnaren) kvar." }
     ];
     
     if (Math.random() > 0.3) {
       const problem = easyWordProblems[Math.floor(Math.random() * easyWordProblems.length)];
       correctAnswer = problem.answer;
+      currentQuestionType = problem.type;
+      currentExplanation = problem.explanation;
       document.getElementById("question").innerText = problem.text;
+      
+      // Flerval (50% av frågorna)
+      if(Math.random() > 0.5) {
+        generateMultipleChoice(problem.answer);
+      } else {
+        hideMultipleChoice();
+      }
       return;
     }
     
     a = Math.floor(Math.random() * 10);
     b = Math.floor(Math.random() * 10);
     correctAnswer = a + b;
+    currentQuestionType = "addition";
+    currentExplanation = `${a} + ${b} = ${correctAnswer}`;
     document.getElementById("question").innerText = `${a} + ${b} = ?`;
+    hideMultipleChoice();
     
   } else {
     // SVÅR: Multiplikation, division, svårare ordfrågor
     const hardWordProblems = [
-      { text: "🍎 Lisa har 12 äpplen och delar dem på 3 barn. Hur många får varje barn?", answer: 12 / 3 },
-      { text: "🍕 En pizza har 8 bitar. Om 4 kompisar delar lika, hur många bitar får var och en?", answer: 8 / 4 },
-      { text: "🚗 Det finns 15 bilar på en parkeringsplats. 5 bilar på varje rad. Hur många rader finns det?", answer: 15 / 5 },
-      { text: "🍪 En burk har 20 kakor. Om du äter 4 kakor per dag, hur många dagar räcker de?", answer: 20 / 4 },
-      { text: "📚 Det finns 18 böcker som ska delas på 6 hyllor. Hur många böcker per hylla?", answer: 18 / 6 },
-      { text: "⚽ 24 barn ska delas i lag om 6 personer. Hur många lag blir det?", answer: 24 / 6 },
-      { text: "🎈 Du har 16 ballonger och ska ge 8 till din kompis. Hur många har du kvar?", answer: 16 - 8 },
-      { text: "🐕 En hund har 4 ben. Hur många ben har 3 hundar?", answer: 4 * 3 },
-      { text: "💰 Du har 50 kr och köper godis för 15 kr. Hur mycket får du tillbaka?", answer: 50 - 15 },
-      { text: "🎮 Ett spel kostar 25 kr. Du vill köpa 2 spel. Hur mycket kostar det?", answer: 25 * 2 },
-      { text: "🍕 En pizza kostar 80 kr. Ni är 4 personer som delar. Hur mycket betalar var och en?", answer: 80 / 4 },
-      { text: "🔺 En triangel har 3 sidor. Hur många sidor har 4 trianglar?", answer: 3 * 4 },
-      { text: "⭐ En stjärna har 5 uddar. Hur många uddar har 3 stjärnor?", answer: 5 * 3 },
-      { text: "🎯 Du behöver 100 poäng. Du har 65 poäng. Hur många poäng saknas?", answer: 100 - 65 }
+      { text: "🍎 Lisa har 12 äpplen och delar dem på 3 barn. Hur många får varje barn?", answer: 4, type: "division", explanation: "12 ÷ 3 = 4. Vi delar 12 äpplen jämnt på 3 barn." },
+      { text: "🍕 En pizza har 8 bitar. Om 4 kompisar delar lika, hur många bitar får var och en?", answer: 2, type: "division", explanation: "8 ÷ 4 = 2. Varje kompis får 2 bitar." },
+      { text: "🚗 Det finns 15 bilar på en parkeringsplats. 5 bilar på varje rad. Hur många rader finns det?", answer: 3, type: "division", explanation: "15 ÷ 5 = 3 rader." },
+      { text: "🍪 En burk har 20 kakor. Om du äter 4 kakor per dag, hur många dagar räcker de?", answer: 5, type: "division", explanation: "20 ÷ 4 = 5 dagar." },
+      { text: "📚 Det finns 18 böcker som ska delas på 6 hyllor. Hur många böcker per hylla?", answer: 3, type: "division", explanation: "18 ÷ 6 = 3 böcker per hylla." },
+      { text: "⚽ 24 barn ska delas i lag om 6 personer. Hur många lag blir det?", answer: 4, type: "division", explanation: "24 ÷ 6 = 4 lag." },
+      { text: "🎈 Du har 16 ballonger och ska ge 8 till din kompis. Hur många har du kvar?", answer: 8, type: "subtraction", explanation: "16 - 8 = 8 ballonger kvar." },
+      { text: "🐕 En hund har 4 ben. Hur många ben har 3 hundar?", answer: 12, type: "multiplication", explanation: "4 × 3 = 12 ben totalt." },
+      { text: "💰 Du har 50 kr och köper godis för 15 kr. Hur mycket får du tillbaka?", answer: 35, type: "money", explanation: "50 - 15 = 35 kr i växel." },
+      { text: "🎮 Ett spel kostar 25 kr. Du vill köpa 2 spel. Hur mycket kostar det?", answer: 50, type: "money", explanation: "25 × 2 = 50 kr totalt." },
+      { text: "🍕 En pizza kostar 80 kr. Ni är 4 personer som delar. Hur mycket betalar var och en?", answer: 20, type: "money", explanation: "80 ÷ 4 = 20 kr per person." },
+      { text: "🔺 En triangel har 3 sidor. Hur många sidor har 4 trianglar?", answer: 12, type: "geometry", explanation: "3 × 4 = 12 sidor totalt." },
+      { text: "⭐ En stjärna har 5 uddar. Hur många uddar har 3 stjärnor?", answer: 15, type: "multiplication", explanation: "5 × 3 = 15 uddar." },
+      { text: "🎯 Du behöver 100 poäng. Du har 65 poäng. Hur många poäng saknas?", answer: 35, type: "subtraction", explanation: "100 - 65 = 35 poäng saknas." },
+      { text: "📐 En rektangel är 5 cm lång och 3 cm bred. Vad är arean? (längd × bredd)", answer: 15, type: "geometry", explanation: "Area = längd × bredd = 5 × 3 = 15 cm²." },
+      { text: "📏 Omkretsen av en fyrkant med sida 6 cm? (alla sidor ihop)", answer: 24, type: "geometry", explanation: "Omkrets = 6 + 6 + 6 + 6 = 24 cm." },
+      { text: "⚖️ Hur många gram är 2 kg?", answer: 2000, type: "units", explanation: "1 kg = 1000 g, så 2 kg = 2000 g." },
+      { text: "📏 Hur många meter är 250 cm?", answer: 2.5, type: "units", explanation: "100 cm = 1 m, så 250 cm = 2,5 m." },
+      { text: "🥤 Hur många ml är 2 liter?", answer: 2000, type: "units", explanation: "1 liter = 1000 ml, så 2 liter = 2000 ml." },
+      { text: "⏰ Hur många minuter är 2,5 timmar?", answer: 150, type: "time", explanation: "1 timme = 60 min. 2,5 × 60 = 150 minuter." },
+      { text: "💵 En vara kostar 12,50 kr. Du köper 4 st. Totalpris? (avrunda till heltal)", answer: 50, type: "decimals", explanation: "12,50 × 4 = 50 kr." },
+      { text: "🍰 Du har 3/4 av en tårta. Din kompis tar 1/4. Hur mycket har du kvar? (svara 2 för 2/4)", answer: 2, type: "fractions", explanation: "3/4 - 1/4 = 2/4 (eller 1/2) kvar." }
     ];
     
     if (Math.random() > 0.3) {
       const problem = hardWordProblems[Math.floor(Math.random() * hardWordProblems.length)];
       correctAnswer = problem.answer;
+      currentQuestionType = problem.type;
+      currentExplanation = problem.explanation;
       document.getElementById("question").innerText = problem.text;
+      
+      // Flerval (60% av svåra frågorna)
+      if(Math.random() > 0.4) {
+        generateMultipleChoice(problem.answer);
+      } else {
+        hideMultipleChoice();
+      }
       return;
     }
     
     a = Math.floor(Math.random() * 10);
     b = Math.floor(Math.random() * 10);
     correctAnswer = a * b;
+    currentQuestionType = "multiplication";
+    currentExplanation = `${a} × ${b} = ${correctAnswer}`;
     document.getElementById("question").innerText = `${a} × ${b} = ?`;
+    hideMultipleChoice();
   }
 }
 
 // =====================
 // CHECK SVAR
 // =====================
-function checkAnswer() {
-  const userAnswer = Number(document.getElementById("answer").value);
+function checkAnswer(providedAnswer) {
+  const userAnswer = providedAnswer !== undefined ? providedAnswer : Number(document.getElementById("answer").value);
   const timeTaken = (Date.now() - questionStartTime) / 1000; // sekunder
+  
+  const wasCorrect = userAnswer === correctAnswer;
 
-  if (userAnswer === correctAnswer) {
+  if (wasCorrect) {
     score++;
     combo++;
     streak++;
@@ -363,7 +436,16 @@ function checkAnswer() {
     combo = 0;
     streak = 0;
     shakeScreen();
+    showExplanation(false);
   }
+  
+  // Uppdatera progress
+  if(currentQuestionType) {
+    updateProgress(currentQuestionType, wasCorrect);
+  }
+  
+  // Kolla daglig utmaning
+  checkDailyChallengeComplete();
 
   document.getElementById("answer").value = "";
   document.getElementById("score").innerText = score;
@@ -371,7 +453,13 @@ function checkAnswer() {
   document.getElementById("levelBadge").innerText = getMedal();
   updateStars();
   checkAchievements();
-  generateMath();
+  
+  if(testMode) {
+    nextTestQuestion();
+  } else {
+    generateMath();
+  }
+  
   questionStartTime = Date.now();
 }
 
@@ -647,4 +735,290 @@ function drawClock(hour, minute) {
     100 + 70 * Math.sin(minute * 6 * Math.PI / 180 - Math.PI / 2)
   );
   ctx.stroke();
+}
+
+// =====================
+// FLERVAL
+// =====================
+function generateMultipleChoice(correctAns) {
+  const container = document.getElementById("multipleChoice");
+  if(!container) return;
+  
+  container.classList.remove("hidden");
+  document.getElementById("answer").classList.add("hidden");
+  
+  multipleChoiceOptions = [correctAns];
+  
+  // Generera 3 felaktiga alternativ
+  while(multipleChoiceOptions.length < 4) {
+    let wrong = correctAns + Math.floor(Math.random() * 10) - 5;
+    if(wrong !== correctAns && !multipleChoiceOptions.includes(wrong) && wrong > 0) {
+      multipleChoiceOptions.push(wrong);
+    }
+  }
+  
+  // Blanda alternativen
+  multipleChoiceOptions.sort(() => Math.random() - 0.5);
+  
+  // Visa knappar
+  container.innerHTML = "";
+  multipleChoiceOptions.forEach(option => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.textContent = option;
+    btn.onclick = () => checkMultipleChoice(option);
+    container.appendChild(btn);
+  });
+}
+
+function hideMultipleChoice() {
+  const container = document.getElementById("multipleChoice");
+  if(container) {
+    container.classList.add("hidden");
+    document.getElementById("answer").classList.remove("hidden");
+  }
+}
+
+function checkMultipleChoice(selected) {
+  if(selected === correctAnswer) {
+    checkAnswer(correctAnswer);
+  } else {
+    checkAnswer(-999); // Fel svar
+  }
+}
+
+// =====================
+// FÖRKLARINGSLÄGE
+// =====================
+function showExplanation(wasCorrect) {
+  const explDiv = document.getElementById("explanation");
+  if(!explDiv) return;
+  
+  if(!wasCorrect && currentExplanation) {
+    explDiv.classList.remove("hidden");
+    explDiv.innerHTML = `
+      <h3>💡 Så här tänker du:</h3>
+      <p>${currentExplanation}</p>
+    `;
+    setTimeout(() => explDiv.classList.add("hidden"), 8000);
+  } else {
+    explDiv.classList.add("hidden");
+  }
+}
+
+// =====================
+// PROGRESSIONSSPÅRNING
+// =====================
+function updateProgress(type, wasCorrect) {
+  if(!progressStats[type]) progressStats[type] = { correct: 0, total: 0 };
+  
+  progressStats[type].total++;
+  if(wasCorrect) progressStats[type].correct++;
+  
+  localStorage.setItem("progressStats", JSON.stringify(progressStats));
+  updateProgressDisplay();
+}
+
+function updateProgressDisplay() {
+  const progressDiv = document.getElementById("progressDisplay");
+  if(!progressDiv) return;
+  
+  let html = "<h3>📊 Din utveckling:</h3>";
+  const areas = [
+    { key: "addition", name: "Addition" },
+    { key: "subtraction", name: "Subtraktion" },
+    { key: "multiplication", name: "Multiplikation" },
+    { key: "division", name: "Division" },
+    { key: "fractions", name: "Bråk" },
+    { key: "decimals", name: "Decimaler" },
+    { key: "geometry", name: "Geometri" },
+    { key: "units", name: "Enheter" },
+    { key: "money", name: "Pengar" },
+    { key: "time", name: "Tid" }
+  ];
+  
+  areas.forEach(area => {
+    const stats = progressStats[area.key];
+    if(stats && stats.total > 0) {
+      const percent = Math.round((stats.correct / stats.total) * 100);
+      const color = percent >= 70 ? "green" : percent >= 50 ? "orange" : "red";
+      html += `
+        <div class="progress-bar">
+          <span>${area.name}:</span>
+          <div class="bar">
+            <div class="fill" style="width: ${percent}%; background: ${color}"></div>
+          </div>
+          <span>${percent}% (${stats.correct}/${stats.total})</span>
+        </div>
+      `;
+    }
+  });
+  
+  progressDiv.innerHTML = html;
+}
+
+function getWeakAreas() {
+  const weak = [];
+  Object.keys(progressStats).forEach(key => {
+    const stats = progressStats[key];
+    if(stats.total >= 3) {
+      const percent = (stats.correct / stats.total) * 100;
+      if(percent < 60) {
+        weak.push(key);
+      }
+    }
+  });
+  return weak;
+}
+
+// =====================
+// PROVLÄGE
+// =====================
+function startTestMode() {
+  testMode = true;
+  testQuestions = [];
+  testCurrentQuestion = 0;
+  score = 0;
+  
+  // Generera 20 blandade frågor
+  const allQuestions = [...Array(20)].map(() => {
+    const type = Math.random();
+    if(type < 0.3) return { category: "easy", level: "easy" };
+    else if(type < 0.6) return { category: "hard", level: "hard" };
+    else return { category: "clock", level: Math.random() > 0.5 ? "easy" : "hard" };
+  });
+  
+  testQuestions = allQuestions;
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game").classList.remove("hidden");
+  document.getElementById("testInfo").classList.remove("hidden");
+  
+  testStartTime = Date.now();
+  testTimer = setInterval(updateTestTimer, 1000);
+  
+  nextTestQuestion();
+}
+
+function nextTestQuestion() {
+  if(testCurrentQuestion >= testQuestions.length) {
+    endTestMode();
+    return;
+  }
+  
+  const q = testQuestions[testCurrentQuestion];
+  level = q.level;
+  
+  if(q.category === "clock") {
+    document.getElementById("mathSection").classList.add("hidden");
+    document.getElementById("clockSection").classList.remove("hidden");
+    generateTime();
+  } else {
+    document.getElementById("clockSection").classList.add("hidden");
+    document.getElementById("mathSection").classList.remove("hidden");
+    generateMath();
+  }
+  
+  document.getElementById("testProgress").innerText = 
+    `Fråga ${testCurrentQuestion + 1} av ${testQuestions.length}`;
+  
+  testCurrentQuestion++;
+}
+
+function updateTestTimer() {
+  const elapsed = Math.floor((Date.now() - testStartTime) / 1000);
+  const remaining = testTimeLimit - elapsed;
+  
+  if(remaining <= 0) {
+    endTestMode();
+    return;
+  }
+  
+  const minutes = Math.floor(remaining / 60);
+  const seconds = remaining % 60;
+  document.getElementById("testTimer").innerText = 
+    `⏰ Tid kvar: ${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+function endTestMode() {
+  clearInterval(testTimer);
+  testMode = false;
+  
+  const percent = Math.round((score / testQuestions.length) * 100);
+  let grade = "";
+  if(percent >= 90) grade = "A - Utmärkt! 🏆";
+  else if(percent >= 75) grade = "B - Mycket bra! 🥇";
+  else if(percent >= 60) grade = "C - Bra jobbat! 🥈";
+  else if(percent >= 50) grade = "D - Godkänt! 🥉";
+  else grade = "F - Träna mer! 💪";
+  
+  alert(`
+    📝 PROVRESULTAT
+    
+    Rätt svar: ${score} av ${testQuestions.length}
+    Procent: ${percent}%
+    Betyg: ${grade}
+    
+    ${getWeakAreas().length > 0 ? 
+      `Träna mer på: ${getWeakAreas().join(", ")}` : 
+      "Bra jobbat på alla områden!"}
+  `);
+  
+  document.getElementById("testInfo").classList.add("hidden");
+  document.getElementById("menu").style.display = "block";
+  document.getElementById("game").classList.add("hidden");
+}
+
+// =====================
+// DAGLIG UTMANING
+// =====================
+function checkDailyChallenge() {
+  const today = new Date().toDateString();
+  
+  if(dailyChallenge.date !== today) {
+    // Ny dag
+    if(dailyChallenge.completed) {
+      dailyChallenge.streak++;
+    } else {
+      dailyChallenge.streak = 0;
+    }
+    dailyChallenge.date = today;
+    dailyChallenge.completed = false;
+    localStorage.setItem("dailyChallenge", JSON.stringify(dailyChallenge));
+  }
+  
+  updateDailyChallengeDisplay();
+}
+
+function updateDailyChallengeDisplay() {
+  const div = document.getElementById("dailyChallenge");
+  if(!div) return;
+  
+  div.innerHTML = `
+    <h3>🌟 Dagens utmaning</h3>
+    <p>${dailyChallenge.completed ? "✅ Klart för idag!" : "❌ Inte slutförd"}</p>
+    <p>🔥 Streak: ${dailyChallenge.streak} dagar</p>
+    ${!dailyChallenge.completed ? 
+      '<button onclick="startDailyChallenge()">Starta dagens utmaning!</button>' : 
+      '<p>Kom tillbaka imorgon! 😊</p>'}
+  `;
+}
+
+function startDailyChallenge() {
+  if(dailyChallenge.completed) {
+    alert("Du har redan klarat dagens utmaning! 🎉");
+    return;
+  }
+  
+  alert("🌟 Dagens utmaning: Få 10 rätt i rad!");
+  streak = 0;
+  startGame("math-" + (Math.random() > 0.5 ? "easy" : "hard"));
+}
+
+function checkDailyChallengeComplete() {
+  if(!dailyChallenge.completed && streak >= 10) {
+    dailyChallenge.completed = true;
+    localStorage.setItem("dailyChallenge", JSON.stringify(dailyChallenge));
+    alert("🎊 GRATTIS! Du klarade dagens utmaning! Kom tillbaka imorgon för ny utmaning!");
+    celebrate();
+  }
 }

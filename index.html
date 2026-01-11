@@ -70,10 +70,24 @@
   <button onclick="startGame('math-hard')">🔢 Matte - Svår</button>
   <button onclick="startGame('clock-easy')">🕒 Klockan - Lätt</button>
   <button onclick="startGame('clock-hard')">🕒 Klockan - Svår</button>
+  <button onclick="startTestMode()">📝 Provläge (20 frågor)</button>
 </div>
+
+<!-- DAGLIG UTMANING -->
+<div id="dailyChallenge"></div>
+
+<!-- PROGRESSIONSSPÅRNING -->
+<div id="progressDisplay" style="margin-top: 20px;"></div>
 
 <div id="game" class="hidden">
   <p id="character"></p>
+  
+  <!-- PROVLÄGE INFO -->
+  <div id="testInfo" class="hidden">
+    <h3>📝 Provläge</h3>
+    <p id="testProgress"></p>
+    <p id="testTimer"></p>
+  </div>
   
   <div id="stats">
     <p>🏆 Rekord: <span id="highscoreDisplay">0</span></p>
@@ -91,8 +105,16 @@
   <div id="mathSection" class="hidden">
     <h2>🔢 Matematik</h2>
     <p id="question"></p>
-    <input type="number" id="answer" placeholder="Ditt svar">
+    
+    <!-- FLERVAL -->
+    <div id="multipleChoice" class="hidden"></div>
+    
+    <!-- TEXTINPUT -->
+    <input type="number" id="answer" placeholder="Ditt svar" step="0.1">
     <button onclick="checkAnswer()">Kontrollera</button>
+    
+    <!-- FÖRKLARING -->
+    <div id="explanation" class="hidden"></div>
   </div>
   
   <!-- KLOCKA SEKTION -->
