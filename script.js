@@ -55,6 +55,7 @@ let dailyChallenge = JSON.parse(localStorage.getItem("dailyChallenge")) || {
   completed: false,
   streak: 0
 };
+let isDailyChallengeActive = false;
 
 // =====================
 // INIT
@@ -174,6 +175,11 @@ function applyTheme(selectedTheme) {
 function startGame(mode) {
   gameMode = mode;
   level = mode.includes('easy') ? 'easy' : 'hard';
+  
+  // Nollställ inte streak om daglig utmaning är aktiv
+  if(!isDailyChallengeActive) {
+    streak = 0;
+  }
   
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").classList.remove("hidden");
@@ -439,6 +445,14 @@ function checkAnswer(providedAnswer) {
   } else {
     cheer(false);
     combo = 0;
+    
+    // Om daglig utmaning är aktiv, avsluta den vid fel svar
+    if(isDailyChallengeActive) {
+      isDailyChallengeActive = false;
+      document.getElementById("dailyChallengeInfo").classList.add("hidden");
+      alert("❌ Fel svar! Dagens utmaning avbröts.\n\nDu hade " + streak + " rätt i rad. Försök igen!");
+    }
+    
     streak = 0;
     shakeScreen();
     showExplanation(false);
@@ -1029,16 +1043,21 @@ function startDailyChallenge() {
     return;
   }
   
-  alert("🌟 Dagens utmaning: Få 10 rätt i rad!");
+  isDailyChallengeActive = true;
   streak = 0;
+  document.getElementById("dailyChallengeInfo").classList.remove("hidden");
+  alert("🌟 Dagens utmaning: Få 10 rätt i rad!\n\nDu har just nu " + streak + " rätt i rad. Målet är 10!");
   startGame("math-" + (Math.random() > 0.5 ? "easy" : "hard"));
 }
 
 function checkDailyChallengeComplete() {
-  if(!dailyChallenge.completed && streak >= 10) {
+  if(isDailyChallengeActive && !dailyChallenge.completed && streak >= 10) {
     dailyChallenge.completed = true;
+    isDailyChallengeActive = false;
+    document.getElementById("dailyChallengeInfo").classList.add("hidden");
     localStorage.setItem("dailyChallenge", JSON.stringify(dailyChallenge));
-    alert("🎊 GRATTIS! Du klarade dagens utmaning! Kom tillbaka imorgon för ny utmaning!");
+    updateDailyChallengeDisplay();
+    alert("🎊 GRATTIS! Du klarade dagens utmaning med 10 rätt i rad!\n\nKom tillbaka imorgon för en ny utmaning!");
     celebrate();
   }
 }
