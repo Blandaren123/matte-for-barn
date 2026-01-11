@@ -38,7 +38,8 @@ let progressStats = JSON.parse(localStorage.getItem("progressStats")) || {
   geometry: { correct: 0, total: 0 },
   units: { correct: 0, total: 0 },
   money: { correct: 0, total: 0 },
-  time: { correct: 0, total: 0 }
+  time: { correct: 0, total: 0 },
+  patterns: { correct: 0, total: 0 }
 };
 
 // Provläge
@@ -300,7 +301,13 @@ function generateMath() {
       { text: "🎪 En cirkusbiljett kostar 8 kr. Du vill köpa 3 biljetter. Hur mycket?", answer: 24, type: "money", explanation: "8 × 3 = 24 kr totalt." },
       { text: "🧮 Vad är hälften av 18?", answer: 9, type: "division", explanation: "18 ÷ 2 = 9." },
       { text: "🌈 En regnbåge har 7 färger. 2 regnbågar har hur många färger totalt?", answer: 14, type: "multiplication", explanation: "7 × 2 = 14 färger." },
-      { text: "🍇 Du har 20 druvor och äter 8. Hur många druvor är kvar?", answer: 12, type: "subtraction", explanation: "20 - 8 = 12 druvor kvar." }
+      { text: "🍇 Du har 20 druvor och äter 8. Hur många druvor är kvar?", answer: 12, type: "subtraction", explanation: "20 - 8 = 12 druvor kvar." },
+      { text: "🔢 Vilket tal kommer härnäst? 2, 4, 6, 8, ?", answer: 10, type: "patterns", explanation: "Mönstret ökar med 2 varje gång: 2, 4, 6, 8, 10." },
+      { text: "🔢 Fyll i: 5, 10, 15, 20, ?", answer: 25, type: "patterns", explanation: "Vi räknar i 5-steg: 5, 10, 15, 20, 25." },
+      { text: "🔢 Vilket tal saknas? 10, 20, 30, ?, 50", answer: 40, type: "patterns", explanation: "Talen ökar med 10: 10, 20, 30, 40, 50." },
+      { text: "🔢 Fortsätt serien: 1, 2, 3, 4, ?", answer: 5, type: "patterns", explanation: "Räkna uppåt: 1, 2, 3, 4, 5." },
+      { text: "🔢 Vad blir nästa? 3, 6, 9, 12, ?", answer: 15, type: "patterns", explanation: "3-gångertabellen: 3, 6, 9, 12, 15." },
+      { text: "🔢 Fyll i det saknade: 0, 5, 10, ?, 20", answer: 15, type: "patterns", explanation: "Räkna i 5-steg: 0, 5, 10, 15, 20." }
     ];
     
     if (Math.random() > 0.3) {
@@ -376,7 +383,17 @@ function generateMath() {
       { text: "🚴 En cykeltur är 28 km. Du har cyklat 19 km. Hur långt kvar?", answer: 9, type: "subtraction", explanation: "28 - 19 = 9 km kvar." },
       { text: "⏰ En film är 2 timmar lång. Hur många minuter är det?", answer: 120, type: "time", explanation: "1 timme = 60 min. 2 × 60 = 120 minuter." },
       { text: "📐 En triangel har omkretsen 36 cm. Alla sidor är lika långa. Hur lång är en sida?", answer: 12, type: "geometry", explanation: "36 ÷ 3 = 12 cm per sida." },
-      { text: "🥤 Hur många liter är 5000 ml?", answer: 5, type: "units", explanation: "1000 ml = 1 liter, så 5000 ml = 5 liter." }
+      { text: "🥤 Hur många liter är 5000 ml?", answer: 5, type: "units", explanation: "1000 ml = 1 liter, så 5000 ml = 5 liter." },
+      { text: "🔢 Talföljd: 4, 8, 12, 16, ?", answer: 20, type: "patterns", explanation: "4-gångertabellen: 4, 8, 12, 16, 20." },
+      { text: "🔢 Vilket tal saknas? 100, 90, 80, ?, 60", answer: 70, type: "patterns", explanation: "Minskar med 10: 100, 90, 80, 70, 60." },
+      { text: "🔢 Fortsätt mönstret: 1, 4, 7, 10, ?", answer: 13, type: "patterns", explanation: "Ökar med 3: 1, 4, 7, 10, 13." },
+      { text: "🔢 Vad blir nästa? 50, 45, 40, 35, ?", answer: 30, type: "patterns", explanation: "Minskar med 5: 50, 45, 40, 35, 30." },
+      { text: "🔢 Fyll i: 7, 14, 21, ?, 35", answer: 28, type: "patterns", explanation: "7-gångertabellen: 7, 14, 21, 28, 35." },
+      { text: "🔢 Vilket tal kommer härnäst? 2, 4, 8, 16, ?", answer: 32, type: "patterns", explanation: "Varje tal dubblas: 2, 4, 8, 16, 32." },
+      { text: "🔢 Talföljd: 64, 32, 16, 8, ?", answer: 4, type: "patterns", explanation: "Varje tal halveras: 64, 32, 16, 8, 4." },
+      { text: "🔢 Fortsätt: 3, 5, 7, 9, ?", answer: 11, type: "patterns", explanation: "Udda tal: 3, 5, 7, 9, 11." },
+      { text: "🔢 Vad saknas? 25, 30, 35, ?, 45", answer: 40, type: "patterns", explanation: "Ökar med 5: 25, 30, 35, 40, 45." },
+      { text: "🔢 Vilket blir nästa? 11, 22, 33, 44, ?", answer: 55, type: "patterns", explanation: "11-gångertabellen: 11, 22, 33, 44, 55." }
     ];
     
     if (Math.random() > 0.3) {
