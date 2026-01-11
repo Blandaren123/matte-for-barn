@@ -224,3 +224,28 @@ canvas {
   font-size: 16px;
   padding: 10px 20px;
 }
+
+/* --- Valda/selected states --- */
+.selected {
+  background: #4caf50 !important;
+  border: 3px solid #2e7d32 !important;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+}
+
+#avatars button.selected,
+#accessories span.selected,
+#pets span.selected {
+  background: #4caf50;
+  border: 3px solid #2e7d32;
+  transform: scale(1.2);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+}
+
+#accessories span,
+#pets span {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 5px;
+  transition: all 0.3s;
+}

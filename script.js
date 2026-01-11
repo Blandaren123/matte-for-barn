@@ -41,6 +41,31 @@ window.onload = () => {
     document.getElementById("chosenPet").innerText = "Ditt husdjur: " + pet;
   }
   applyTheme(theme);
+  
+  // Markera sparade val visuellt
+  if(avatar) {
+    document.querySelectorAll('#avatars button').forEach(btn => {
+      if(btn.textContent.includes(avatar)) btn.classList.add('selected');
+    });
+  }
+  if(accessory) {
+    document.querySelectorAll('#accessories span').forEach(span => {
+      if(span.textContent === accessory) span.classList.add('selected');
+    });
+  }
+  if(pet) {
+    document.querySelectorAll('#pets span').forEach(span => {
+      if(span.textContent === pet) span.classList.add('selected');
+    });
+  }
+  if(gender) {
+    document.querySelectorAll('button').forEach(btn => {
+      if((btn.textContent.includes('Tjej') && gender === 'girl') ||
+         (btn.textContent.includes('Kille') && gender === 'boy')) {
+        btn.classList.add('selected');
+      }
+    });
+  }
 };
 
 // =====================
@@ -52,6 +77,15 @@ function selectAvatar(selected) {
   updateCharacterText();
   document.getElementById("chosenAvatar").innerText =
     "Vald avatar: " + avatar;
+  
+  // Uppdatera visuell feedback
+  document.querySelectorAll('#avatars button').forEach(btn => {
+    if(btn.textContent.includes(selected)) {
+      btn.classList.add('selected');
+    } else {
+      btn.classList.remove('selected');
+    }
+  });
 }
 
 function selectAccessory(selected) {
@@ -60,6 +94,15 @@ function selectAccessory(selected) {
   updateCharacterText();
   document.getElementById("chosenAccessory").innerText =
     "Valt tillbehör: " + (accessory || "Ingen");
+  
+  // Uppdatera visuell feedback
+  document.querySelectorAll('#accessories span').forEach(span => {
+    if(span.textContent === selected) {
+      span.classList.add('selected');
+    } else {
+      span.classList.remove('selected');
+    }
+  });
 }
 
 function setPlayer() {
@@ -74,6 +117,17 @@ function setPlayer() {
 function setGender(selected) {
   gender = selected;
   localStorage.setItem("gender", gender);
+  
+  // Uppdatera visuell feedback
+  document.querySelectorAll('#menu button').forEach(btn => {
+    if(btn.textContent.includes('Tjej') && selected === 'girl') {
+      btn.classList.add('selected');
+    } else if(btn.textContent.includes('Kille') && selected === 'boy') {
+      btn.classList.add('selected');
+    } else if(btn.textContent.includes('Tjej') || btn.textContent.includes('Kille')) {
+      btn.classList.remove('selected');
+    }
+  });
 }
 
 function selectPet(selected) {
@@ -81,12 +135,27 @@ function selectPet(selected) {
   localStorage.setItem("pet", pet);
   document.getElementById("chosenPet").innerText = "Ditt husdjur: " + pet;
   updateCharacterText();
+  
+  // Uppdatera visuell feedback
+  document.querySelectorAll('#pets span').forEach(span => {
+    if(span.textContent === selected) {
+      span.classList.add('selected');
+    } else {
+      span.classList.remove('selected');
+    }
+  });
 }
 
 function selectTheme(selectedTheme) {
   theme = selectedTheme;
   localStorage.setItem("theme", theme);
   applyTheme(theme);
+  
+  // Uppdatera visuell feedback
+  document.querySelectorAll('#themes button').forEach(btn => {
+    btn.classList.remove('selected');
+  });
+  event.target.classList.add('selected');
 }
 
 function applyTheme(selectedTheme) {
