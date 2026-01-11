@@ -18,7 +18,6 @@ let multipleChoiceOptions = []; // För flerval
 let avatar = localStorage.getItem("avatar") || "😺";
 let accessory = localStorage.getItem("accessory") || "";
 let player = localStorage.getItem("playerName") || "";
-let gender = localStorage.getItem("gender") || ""; // kön
 let pet = localStorage.getItem("pet") || ""; // husdjur
 let theme = localStorage.getItem("theme") || "default";
 
@@ -94,14 +93,6 @@ window.onload = () => {
       if(span.textContent === pet) span.classList.add('selected');
     });
   }
-  if(gender) {
-    document.querySelectorAll('button').forEach(btn => {
-      if((btn.textContent.includes('Tjej') && gender === 'girl') ||
-         (btn.textContent.includes('Kille') && gender === 'boy')) {
-        btn.classList.add('selected');
-      }
-    });
-  }
 };
 
 // =====================
@@ -148,22 +139,6 @@ function setPlayer() {
   localStorage.setItem("playerName", player);
   document.getElementById("savedName").innerText =
     `Hej ${player}!`;
-}
-
-function setGender(selected) {
-  gender = selected;
-  localStorage.setItem("gender", gender);
-  
-  // Uppdatera visuell feedback
-  document.querySelectorAll('#menu button').forEach(btn => {
-    if(btn.textContent.includes('Tjej') && selected === 'girl') {
-      btn.classList.add('selected');
-    } else if(btn.textContent.includes('Kille') && selected === 'boy') {
-      btn.classList.add('selected');
-    } else if(btn.textContent.includes('Tjej') || btn.textContent.includes('Kille')) {
-      btn.classList.remove('selected');
-    }
-  });
 }
 
 function selectPet(selected) {
@@ -247,10 +222,6 @@ function avatarPersonality() {
 }
 
 function updateCharacterText() {
-  let greet = gender === "girl" ? "Prinsessan" :
-              gender === "boy" ? "Hjälten" :
-              "";
-
   // Tillbehörsklass
   let accessoryClass = "";
   if(accessory === "⚔️") accessoryClass = "accessory-spin";
@@ -268,7 +239,7 @@ function updateCharacterText() {
     <span class="${avatarClass}">${avatar}</span>
     <span class="${accessoryClass}">${accessory}</span>
     ${pet ? `<span class="pet-float">${pet}</span>` : ''}
-    ${greet} ${avatarPersonality()}
+    ${avatarPersonality()}
   `;
 }
 
