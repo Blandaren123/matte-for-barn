@@ -175,7 +175,9 @@ function applyTheme(selectedTheme) {
 // =====================
 function startGame(mode) {
   gameMode = mode;
-  level = mode.includes('easy') ? 'easy' : 'hard';
+  if(mode.includes('easy')) level = 'easy';
+  else if(mode.includes('medium')) level = 'medium';
+  else level = 'hard';
   
   // Nollställ inte streak om daglig utmaning är aktiv
   if(!isDailyChallengeActive) {
@@ -257,6 +259,11 @@ function generateMath() {
     if(level === "easy") {
       correctAnswer = Math.floor(Math.random() * 20 + 10); // 10-29
       document.getElementById("question").innerText = `👑 Bossfråga! Vad blir ${correctAnswer - 5} + 5?`;
+    } else if(level === "medium") {
+      a = Math.floor(Math.random() * 8) + 3; // 3-10
+      b = Math.floor(Math.random() * 8) + 3; // 3-10
+      correctAnswer = a * b;
+      document.getElementById("question").innerText = `👑 Bossfråga! ${a} × ${b} = ?`;
     } else {
       a = Math.floor(Math.random() * 11) + 10; // 10-20
       b = Math.floor(Math.random() * 11) + 10; // 10-20
@@ -309,6 +316,49 @@ function generateMath() {
       { text: "🔢 Vad blir nästa? 3, 6, 9, 12, ?", answer: 15, type: "patterns", explanation: "3-gångertabellen: 3, 6, 9, 12, 15." },
       { text: "🔢 Fyll i det saknade: 0, 5, 10, ?, 20", answer: 15, type: "patterns", explanation: "Räkna i 5-steg: 0, 5, 10, 15, 20." }
     ];
+
+    const mediumWordProblems = [
+      { text: "🍎 Du har 34 äpplen och köper 28 till. Hur många har du nu?", answer: 62, type: "addition", explanation: "34 + 28 = 62. Vi adderar de två talen." },
+      { text: "🚗 Det finns 56 bilar i parkeringen. 29 kör iväg. Hur många är kvar?", answer: 27, type: "subtraction", explanation: "56 - 29 = 27. Vi subtraherar." },
+      { text: "🍕 En pizza är delad i 4 bitar. Du äter 1 bit. Hur stor del åt du? (svara 4 för 1/4)", answer: 4, type: "fractions", explanation: "1 av 4 bitar = 1/4 (svara 4 för nämnaren)." },
+      { text: "⚽ Det finns 5 bollar i varje låda. Du har 7 lådor. Hur många bollar totalt?", answer: 35, type: "multiplication", explanation: "5 × 7 = 35 bollar." },
+      { text: "💰 En leksak kostar 45 kr. Du köper 3 stycken. Hur mycket kostar det?", answer: 135, type: "money", explanation: "45 × 3 = 135 kr." },
+      { text: "📏 Hur många mm är 5 cm?", answer: 50, type: "units", explanation: "1 cm = 10 mm, så 5 cm = 50 mm." },
+      { text: "🎮 Du har 48 poäng och delar med 3 kompisar. Hur många får var och en?", answer: 16, type: "division", explanation: "48 ÷ 3 = 16 poäng var." },
+      { text: "🌟 En pentagon (femhörning) har hur många sidor?", answer: 5, type: "geometry", explanation: "En pentagon har 5 sidor." },
+      { text: "⏰ Hur många minuter är 2 timmar?", answer: 120, type: "time", explanation: "1 timme = 60 min, så 2 timmar = 120 min." },
+      { text: "🍬 Du har 72 karameller och delar lika på 6 barn. Hur många får varje barn?", answer: 12, type: "division", explanation: "72 ÷ 6 = 12 karameller per barn." },
+      { text: "🔢 Vad blir 6 × 8?", answer: 48, type: "multiplication", explanation: "6 × 8 = 48. Det är 6-gångertabellen." },
+      { text: "🎯 Du har 85 kr och köper något för 37 kr. Hur mycket får du tillbaka?", answer: 48, type: "money", explanation: "85 - 37 = 48 kr i växel." },
+      { text: "📐 En rektangel har hur många hörn?", answer: 4, type: "geometry", explanation: "En rektangel har 4 hörn." },
+      { text: "🌺 Det finns 9 blommor i varje bukett. Du köper 6 buketter. Hur många blommor?", answer: 54, type: "multiplication", explanation: "9 × 6 = 54 blommor totalt." },
+      { text: "💎 Du hittar 7 diamanter varje dag i 8 dagar. Hur många totalt?", answer: 56, type: "multiplication", explanation: "7 × 8 = 56 diamanter." },
+      { text: "🥤 En flaska innehåller 75 cl. Hur många ml är det?", answer: 750, type: "units", explanation: "1 cl = 10 ml, så 75 cl = 750 ml." },
+      { text: "🧮 Vad är hälften av 34?", answer: 17, type: "division", explanation: "34 ÷ 2 = 17." },
+      { text: "🍪 Du bakar 60 kakor och delar på 4 tallrikar. Hur många på varje tallrik?", answer: 15, type: "division", explanation: "60 ÷ 4 = 15 kakor per tallrik." },
+      { text: "🔢 Vad blir 9 × 7?", answer: 63, type: "multiplication", explanation: "9 × 7 = 63. Det är 9-gångertabellen." },
+      { text: "🚲 En cykel kostar 450 kr. Du har sparat 275 kr. Hur mycket mer behöver du?", answer: 175, type: "money", explanation: "450 - 275 = 175 kr mer att spara." },
+      { text: "⏱️ Hur många sekunder är 3 minuter?", answer: 180, type: "time", explanation: "1 minut = 60 sek, så 3 min = 180 sek." },
+      { text: "🍕 En pizza är delad i 8 bitar. Du äter 3 bitar. Hur många bitar är kvar?", answer: 5, type: "subtraction", explanation: "8 - 3 = 5 bitar kvar." },
+      { text: "📘 Det finns 12 böcker på varje hylla. Du har 5 hyllor. Hur många böcker totalt?", answer: 60, type: "multiplication", explanation: "12 × 5 = 60 böcker." },
+      { text: "🎈 En ballong kostar 12 kr. Du köper 4 ballonger. Hur mycket kostar det?", answer: 48, type: "money", explanation: "12 × 4 = 48 kr totalt." },
+      { text: "🔢 Vilket tal kommer härnäst? 15, 30, 45, 60, ?", answer: 75, type: "patterns", explanation: "Mönstret ökar med 15: 15, 30, 45, 60, 75." },
+      { text: "🔢 Fyll i: 12, 24, 36, ?, 60", answer: 48, type: "patterns", explanation: "12-gångertabellen: 12, 24, 36, 48, 60." },
+      { text: "🐝 Det finns 8 bin i varje bikupa. Du har 9 bikupor. Hur många bin totalt?", answer: 72, type: "multiplication", explanation: "8 × 9 = 72 bin." },
+      { text: "💰 Du har 100 kr och köper något för 63 kr. Hur mycket får du tillbaka?", answer: 37, type: "money", explanation: "100 - 63 = 37 kr i växel." },
+      { text: "📏 Hur många cm är 2,5 meter?", answer: 250, type: "units", explanation: "1 m = 100 cm, så 2,5 m = 250 cm." },
+      { text: "🎲 Du kastar en tärning 8 gånger och får 4 varje gång. Summan blir?", answer: 32, type: "multiplication", explanation: "4 × 8 = 32." },
+      { text: "🔢 Vad blir nästa? 20, 40, 60, 80, ?", answer: 100, type: "patterns", explanation: "Räkna i 20-steg: 20, 40, 60, 80, 100." },
+      { text: "🌈 Du har 45 färgpennor och ger bort 18. Hur många har du kvar?", answer: 27, type: "subtraction", explanation: "45 - 18 = 27 pennor kvar." },
+      { text: "🍊 En apelsin kostar 8 kr. Du köper 7 apelsiner. Hur mycket kostar det?", answer: 56, type: "money", explanation: "8 × 7 = 56 kr." },
+      { text: "🔢 Fortsätt: 6, 12, 18, 24, ?", answer: 30, type: "patterns", explanation: "6-gångertabellen: 6, 12, 18, 24, 30." },
+      { text: "⏰ Hur många minuter är en kvart (1/4 timme)?", answer: 15, type: "time", explanation: "1 timme = 60 min. En kvart = 60 ÷ 4 = 15 min." },
+      { text: "🎯 Du träffar målet 9 gånger. Varje träff ger 5 poäng. Hur många poäng?", answer: 45, type: "multiplication", explanation: "9 × 5 = 45 poäng." },
+      { text: "🧮 Vad är 54 delat med 6?", answer: 9, type: "division", explanation: "54 ÷ 6 = 9." },
+      { text: "🍇 Du har 96 druvor och delar på 8 personer. Hur många får var och en?", answer: 12, type: "division", explanation: "96 ÷ 8 = 12 druvor per person." },
+      { text: "🔢 Vilket tal saknas? 18, 27, 36, ?, 54", answer: 45, type: "patterns", explanation: "9-gångertabellen: 18, 27, 36, 45, 54." },
+      { text: "📐 En hexagon (sexhörning) har hur många sidor?", answer: 6, type: "geometry", explanation: "En hexagon har 6 sidor." }
+    ];
     
     if (Math.random() > 0.3) {
       const problem = easyWordProblems[Math.floor(Math.random() * easyWordProblems.length)];
@@ -332,6 +382,33 @@ function generateMath() {
     currentQuestionType = "addition";
     currentExplanation = `${a} + ${b} = ${correctAnswer}`;
     document.getElementById("question").innerText = `${a} + ${b} = ?`;
+    hideMultipleChoice();
+    
+  } else if (level === "medium") {
+    // MEDEL: 2-siffriga tal, gångertabeller 1-10, enklare division
+    
+    if (Math.random() > 0.3) {
+      const problem = mediumWordProblems[Math.floor(Math.random() * mediumWordProblems.length)];
+      correctAnswer = problem.answer;
+      currentQuestionType = problem.type;
+      currentExplanation = problem.explanation;
+      document.getElementById("question").innerText = problem.text;
+      
+      // Flerval (55% av medelfrågorna)
+      if(Math.random() > 0.45) {
+        generateMultipleChoice(problem.answer);
+      } else {
+        hideMultipleChoice();
+      }
+      return;
+    }
+    
+    a = Math.floor(Math.random() * 9) + 2; // 2-10
+    b = Math.floor(Math.random() * 9) + 2; // 2-10
+    correctAnswer = a * b;
+    currentQuestionType = "multiplication";
+    currentExplanation = `${a} × ${b} = ${correctAnswer}`;
+    document.getElementById("question").innerText = `${a} × ${b} = ?`;
     hideMultipleChoice();
     
   } else {
@@ -688,6 +765,34 @@ function generateTime() {
     }
     
     document.getElementById("timeQuestion").innerText = timeText;
+    
+  } else if(level === "medium") {
+    // MEDEL: Kvart över och kvart i, 12-timmars med tydlig tid på dygnet
+    const minutes = [0, 15, 30, 45];
+    minute = minutes[Math.floor(Math.random() * minutes.length)];
+    
+    hour = Math.floor(Math.random() * 12) + 1; // 1-12
+    let isMorning = Math.random() > 0.5;
+    let timeOfDay = isMorning ? "på morgonen" : "på eftermiddagen";
+    
+    // Konvertera till 24-timmars för input-matching
+    let hour24 = isMorning ? (hour === 12 ? 0 : hour) : (hour === 12 ? 12 : hour + 12);
+    correctTime = `${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    
+    let hourText = numberToText(hour);
+    let timeText = "";
+    
+    if(minute === 0) {
+      timeText = `🕒 Klockan är ${hourText} ${timeOfDay}`;
+    } else if(minute === 30) {
+      timeText = `🕒 Klockan är halv ${numberToText(hour + 1)} ${timeOfDay}`;
+    } else if(minute === 15) {
+      timeText = `🕒 Klockan är kvart över ${hourText} ${timeOfDay}`;
+    } else if(minute === 45) {
+      timeText = `🕒 Klockan är kvart i ${numberToText(hour + 1)} ${timeOfDay}`;
+    }
+    
+    document.getElementById("timeQuestion").innerText = timeText + " (Svara i 24-timmarsformat HH:MM)";
     
   } else {
     // SVÅR: Kvart över, kvart i, och tidsgåtor med 24-timmars tid
