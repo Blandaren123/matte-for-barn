@@ -512,7 +512,8 @@ function checkAnswer(providedAnswer) {
       highscore = score;
       localStorage.setItem("highscore", highscore);
       document.getElementById("highscoreDisplay").innerText = highscore;
-      alert("🎊 NYTT REKORD! 🎊");
+      showMessage("🎊 NYTT REKORD! 🎊");
+      celebrate();
     }
 
   } else {
@@ -523,7 +524,7 @@ function checkAnswer(providedAnswer) {
     if(isDailyChallengeActive) {
       isDailyChallengeActive = false;
       document.getElementById("dailyChallengeInfo").classList.add("hidden");
-      alert("❌ Fel svar! Dagens utmaning avbröts.\n\nDu hade " + streak + " rätt i rad. Försök igen!");
+      showMessage(`❌ Dagens utmaning avbröts! Du hade ${streak} rätt i rad.`);
     }
     
     streak = 0;
@@ -661,22 +662,22 @@ function sparkleEffect() {
 // =====================
 function usePowerup(type) {
   if(powerups[type] <= 0) {
-    alert("Du har inga fler av denna power-up!");
+    showMessage("Du har inga fler av denna power-up!");
     return;
   }
   
   if(type === "skip") {
     powerups.skip--;
     generateMath();
-    alert("⏭️ Fråga hoppas över!");
+    showMessage("⏭️ Fråga hoppas över!");
   } else if(type === "halfhalf") {
     powerups.halfhalf--;
-    alert(`💡 Tips: Svaret är INTE ${correctAnswer + Math.floor(Math.random() * 10) + 1}`);
+    showMessage(`💡 Tips: Svaret är INTE ${correctAnswer + Math.floor(Math.random() * 10) + 1}`);
   } else if(type === "extraTime") {
     powerups.extraTime--;
     score += 2;
     document.getElementById("score").innerText = score;
-    alert("⏰ +2 extrapoäng!");
+    showMessage("⏰ +2 extrapoäng!");
   }
   
   updatePowerupDisplay();
@@ -701,7 +702,7 @@ function checkAchievements() {
   achievements.forEach(a => {
     if (score >= a.score && !a.unlocked) {
       a.unlocked = true;
-      alert(`🏆 Achievement låst upp: ${a.name}!`);
+      showMessage(`🏆 Achievement: ${a.name}!`);
       celebrate();
 
       if(a.score === 5) selectAccessory("🎩");
