@@ -465,3 +465,31 @@ canvas {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.02); }
 }
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Förbättrad knapp-stil */
+button {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}

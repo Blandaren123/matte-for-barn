@@ -433,6 +433,35 @@ function generateMath() {
 }
 
 // =====================
+// FEEDBACK FUNKTION
+// =====================
+function cheer(success) {
+  // Visuell feedback utan avatar
+  const question = document.getElementById("question");
+  if (success) {
+    question.style.background = "linear-gradient(135deg, #10b981, #059669)";
+    question.style.color = "white";
+    question.style.padding = "15px";
+    question.style.borderRadius = "10px";
+    setTimeout(() => {
+      question.style.background = "";
+      question.style.color = "";
+      question.style.padding = "";
+    }, 800);
+  } else {
+    question.style.background = "linear-gradient(135deg, #ef4444, #dc2626)";
+    question.style.color = "white";
+    question.style.padding = "15px";
+    question.style.borderRadius = "10px";
+    setTimeout(() => {
+      question.style.background = "";
+      question.style.color = "";
+      question.style.padding = "";
+    }, 800);
+  }
+}
+
+// =====================
 // CHECK SVAR
 // =====================
 function checkAnswer(providedAnswer) {
@@ -452,7 +481,7 @@ function checkAnswer(providedAnswer) {
       fastAnswers++;
       score++;
       sparkleEffect();
-      document.getElementById("character").innerText += " ⚡ Blixtsvar!";
+      showMessage("⚡ Blixtsvar! +1 bonuspoäng");
     }
 
     if(combo >= 3) {
@@ -515,6 +544,31 @@ function checkAnswer(providedAnswer) {
 // =====================
 // LEVEL & STARS
 // =====================
+function showMessage(message) {
+  // Visa meddelande i ett toast-liknande element
+  const msgDiv = document.createElement('div');
+  msgDiv.innerText = message;
+  msgDiv.style.position = 'fixed';
+  msgDiv.style.top = '20px';
+  msgDiv.style.left = '50%';
+  msgDiv.style.transform = 'translateX(-50%)';
+  msgDiv.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+  msgDiv.style.color = 'white';
+  msgDiv.style.padding = '15px 30px';
+  msgDiv.style.borderRadius = '10px';
+  msgDiv.style.fontSize = '1.2em';
+  msgDiv.style.fontWeight = 'bold';
+  msgDiv.style.zIndex = '10000';
+  msgDiv.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+  msgDiv.style.animation = 'slideDown 0.5s ease-out';
+  document.body.appendChild(msgDiv);
+  setTimeout(() => {
+    msgDiv.style.opacity = '0';
+    msgDiv.style.transition = 'opacity 0.5s';
+    setTimeout(() => msgDiv.remove(), 500);
+  }, 2000);
+}
+
 function getMedal() {
   if (score >= 15) return "🥇 Guld";
   if (score >= 10) return "🥈 Silver";
