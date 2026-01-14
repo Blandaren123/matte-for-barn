@@ -848,17 +848,33 @@ function checkTime() {
 
   if(userTime === correctTime) {
     document.getElementById("timeResult").innerText = "✅ Rätt tid!";
+    document.getElementById("timeResult").style.color = "#10b981";
     scoreJump();
     score++;
     document.getElementById("score").innerText = score;
     checkAchievements();
+    
+    // Dölj meddelandet efter 1.5 sekunder
+    setTimeout(() => {
+      document.getElementById("timeResult").innerText = "";
+    }, 1500);
   } else {
     document.getElementById("timeResult").innerText = `❌ Rätt svar är ${correctTime}`;
+    document.getElementById("timeResult").style.color = "#ef4444";
     combo = 0;
+    
+    // Dölj meddelandet efter 2 sekunder
+    setTimeout(() => {
+      document.getElementById("timeResult").innerText = "";
+    }, 2000);
   }
 
   document.getElementById("timeAnswer").value = "";
-  generateTime();
+  
+  // Vänta lite innan nästa fråga visas
+  setTimeout(() => {
+    generateTime();
+  }, 500);
 }
 
 function drawClock(hour, minute) {
