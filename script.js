@@ -14,6 +14,7 @@ let fastAnswers = 0; // antal snabba svar
 let currentQuestionType = ""; // För att spåra kategori
 let currentExplanation = ""; // Förklaring till svaret
 let multipleChoiceOptions = []; // För flerval
+let lastQuestions = []; // Håller koll på senaste 5 frågorna för att undvika upprepning
 
 
 // Power-ups
@@ -169,7 +170,7 @@ function generateMath() {
     ];
     
     if (Math.random() > 0.3) {
-      const problem = easyWordProblems[Math.floor(Math.random() * easyWordProblems.length)];
+      const problem = getUniqueQuestion(easyWordProblems);
       correctAnswer = problem.answer;
       currentQuestionType = problem.type;
       currentExplanation = problem.explanation;
@@ -196,7 +197,7 @@ function generateMath() {
     // MEDEL: 2-siffriga tal, gångertabeller 1-10, enklare division
     
     if (Math.random() > 0.3) {
-      const problem = mediumWordProblems[Math.floor(Math.random() * mediumWordProblems.length)];
+      const problem = getUniqueQuestion(mediumWordProblems);
       correctAnswer = problem.answer;
       currentQuestionType = problem.type;
       currentExplanation = problem.explanation;
@@ -282,7 +283,7 @@ function generateMath() {
     ];
     
     if (Math.random() > 0.3) {
-      const problem = hardWordProblems[Math.floor(Math.random() * hardWordProblems.length)];
+      const problem = getUniqueQuestion(hardWordProblems);
       correctAnswer = problem.answer;
       currentQuestionType = problem.type;
       currentExplanation = problem.explanation;
@@ -336,7 +337,7 @@ function generateMath() {
       { text: "📐 Lös: 3x + 6 = 15. Vad är x?", answer: 3, type: "algebra", explanation: "3x + 6 = 15. Först: 3x = 15 - 6 = 9. Sen: x = 9 ÷ 3 = 3" }
     ];
     
-    const problem = algebraProblems[Math.floor(Math.random() * algebraProblems.length)];
+    const problem = getUniqueQuestion(algebraProblems);
     correctAnswer = problem.answer;
     currentQuestionType = problem.type;
     currentExplanation = problem.explanation;
@@ -376,7 +377,7 @@ function generateMath() {
       { text: "🍕 Vad är 4/5 av 20?", answer: 16, type: "fractions", explanation: "1/5 av 20 = 4. Så 4/5 = 4 × 4 = 16" }
     ];
     
-    const problem = percentProblems[Math.floor(Math.random() * percentProblems.length)];
+    const problem = getUniqueQuestion(percentProblems);
     correctAnswer = problem.answer;
     currentQuestionType = problem.type;
     currentExplanation = problem.explanation;
@@ -416,7 +417,7 @@ function generateMath() {
       { text: "📐 En rektangel har längd 9 cm och bredd 4 cm. Vad är omkretsen?", answer: 26, type: "geometry", explanation: "Omkrets = 9 + 4 + 9 + 4 = 26 cm" }
     ];
     
-    const problem = geometryProblems[Math.floor(Math.random() * geometryProblems.length)];
+    const problem = getUniqueQuestion(geometryProblems);
     correctAnswer = problem.answer;
     currentQuestionType = problem.type;
     currentExplanation = problem.explanation;
@@ -428,6 +429,24 @@ function generateMath() {
       hideMultipleChoice();
     }
   }
+}
+
+// =====================
+// UNDVIK UPPREPADE FRÅGOR
+// =====================
+function getUniqueQuestion(problemsArray) {
+  let problem;
+  let attempts = 0;
+  do {
+    problem = problemsArray[Math.floor(Math.random() * problemsArray.length)];
+    attempts++;
+  } while (lastQuestions.includes(problem.text) && attempts < 10);
+  
+  // Spara frågan
+  lastQuestions.push(problem.text);
+  if (lastQuestions.length > 5) lastQuestions.shift(); // Behåll bara senaste 5
+  
+  return problem;
 }
 
 // =====================
@@ -484,7 +503,7 @@ function checkAnswer(providedAnswer) {
 
     if(combo >= 3) {
       score++;
-      alert(`🔥 Combo x${combo}! Extra poäng!`);
+      showMessage(`🔥 Combo x${combo}! +1 poäng`);
       celebrate();
     }
     
