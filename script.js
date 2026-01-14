@@ -59,8 +59,6 @@ let isDailyChallengeActive = false;
 
 window.onload = () => {
   loadAchievements();
-  checkDailyChallenge();
-  updateProgressDisplay();
   document.getElementById("highscoreDisplay").innerText = highscore;
 };
 
@@ -525,8 +523,6 @@ function checkAnswer(providedAnswer) {
   document.getElementById("answer").value = "";
   document.getElementById("score").innerText = score;
   document.getElementById("streakDisplay").innerText = streak;
-  document.getElementById("levelBadge").innerText = getMedal();
-  updateStars();
   checkAchievements();
   
   // Dölj flerval innan nästa fråga genereras
@@ -836,8 +832,6 @@ function checkTime() {
     scoreJump();
     score++;
     document.getElementById("score").innerText = score;
-    document.getElementById("levelBadge").innerText = getMedal();
-    updateStars();
     checkAchievements();
   } else {
     document.getElementById("timeResult").innerText = `❌ Rätt svar är ${correctTime}`;
