@@ -185,12 +185,19 @@ function generateMath() {
       return;
     }
     
-    a = Math.floor(Math.random() * 10);
-    b = Math.floor(Math.random() * 10);
+    let a, b;
+    let attempts = 0;
+    do {
+      a = Math.floor(Math.random() * 10);
+      b = Math.floor(Math.random() * 10);
+      attempts++;
+    } while (isRecentQuestion(a, b, '+') && attempts < 20);
+    
     correctAnswer = a + b;
     currentQuestionType = "addition";
     currentExplanation = `${a} + ${b} = ${correctAnswer}`;
     document.getElementById("question").innerText = `${a} + ${b} = ?`;
+    saveQuestionToHistory(`${a} + ${b}`);
     hideMultipleChoice();
   
   } else if (level === "medium") {
@@ -212,12 +219,19 @@ function generateMath() {
       return;
     }
     
-    a = Math.floor(Math.random() * 9) + 2; // 2-10
-    b = Math.floor(Math.random() * 9) + 2; // 2-10
+    let a, b;
+    let attempts = 0;
+    do {
+      a = Math.floor(Math.random() * 9) + 2; // 2-10
+      b = Math.floor(Math.random() * 9) + 2; // 2-10
+      attempts++;
+    } while (isRecentQuestion(a, b, '×') && attempts < 20);
+    
     correctAnswer = a * b;
     currentQuestionType = "multiplication";
     currentExplanation = `${a} × ${b} = ${correctAnswer}`;
     document.getElementById("question").innerText = `${a} × ${b} = ?`;
+    saveQuestionToHistory(`${a} × ${b}`);
     hideMultipleChoice();
     
   } else {
@@ -298,12 +312,19 @@ function generateMath() {
       return;
     }
     
-    a = Math.floor(Math.random() * 10);
-    b = Math.floor(Math.random() * 10);
+    let a, b;
+    let attempts = 0;
+    do {
+      a = Math.floor(Math.random() * 10);
+      b = Math.floor(Math.random() * 10);
+      attempts++;
+    } while (isRecentQuestion(a, b, '×') && attempts < 20);
+    
     correctAnswer = a * b;
     currentQuestionType = "multiplication";
     currentExplanation = `${a} × ${b} = ${correctAnswer}`;
     document.getElementById("question").innerText = `${a} × ${b} = ?`;
+    saveQuestionToHistory(`${a} × ${b}`);
     hideMultipleChoice();
   }
   
@@ -440,13 +461,25 @@ function getUniqueQuestion(problemsArray) {
   do {
     problem = problemsArray[Math.floor(Math.random() * problemsArray.length)];
     attempts++;
-  } while (lastQuestions.includes(problem.text) && attempts < 10);
+  } while (lastQuestions.includes(problem.text) && attempts < 20);
   
   // Spara frågan
   lastQuestions.push(problem.text);
-  if (lastQuestions.length > 5) lastQuestions.shift(); // Behåll bara senaste 5
+  if (lastQuestions.length > 8) lastQuestions.shift(); // Behåll senaste 8
   
   return problem;
+}
+
+// Funktion för att spara matematisk fråga också
+function saveQuestionToHistory(questionText) {
+  lastQuestions.push(questionText);
+  if (lastQuestions.length > 8) lastQuestions.shift();
+}
+
+// Kolla om en matematisk fråga redan visades nyligen
+function isRecentQuestion(a, b, operator) {
+  const questionText = `${a} ${operator} ${b}`;
+  return lastQuestions.includes(questionText);
 }
 
 // =====================
