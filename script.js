@@ -15,9 +15,7 @@ let currentQuestionType = ""; // För att spåra kategori
 let currentExplanation = ""; // Förklaring till svaret
 let multipleChoiceOptions = []; // För flerval
 
-let avatar = localStorage.getItem("avatar") || "😺";
-let accessory = localStorage.getItem("accessory") || "";
-let pet = localStorage.getItem("pet") || ""; // husdjur
+let avatar = localStorage.getItem("avatar") || "🧑";
 let theme = localStorage.getItem("theme") || "default";
 
 // Power-ups
@@ -39,7 +37,10 @@ let progressStats = JSON.parse(localStorage.getItem("progressStats")) || {
   units: { correct: 0, total: 0 },
   money: { correct: 0, total: 0 },
   time: { correct: 0, total: 0 },
-  patterns: { correct: 0, total: 0 }
+  patterns: { correct: 0, total: 0 },
+  algebra: { correct: 0, total: 0 },
+  procent: { correct: 0, total: 0 },
+  potenser: { correct: 0, total: 0 }
 };
 
 // Provläge
@@ -68,28 +69,13 @@ window.onload = () => {
   
   document.getElementById("chosenAvatar").innerText =
     "Vald avatar: " + avatar;
-  document.getElementById("chosenAccessory").innerText =
-    "Valt tillbehör: " + (accessory || "Ingen");
   document.getElementById("highscoreDisplay").innerText = highscore;
-  if(pet) {
-    document.getElementById("chosenPet").innerText = "Ditt husdjur: " + pet;
-  }
   applyTheme(theme);
   
   // Markera sparade val visuellt
   if(avatar) {
     document.querySelectorAll('#avatars button').forEach(btn => {
       if(btn.textContent.includes(avatar)) btn.classList.add('selected');
-    });
-  }
-  if(accessory) {
-    document.querySelectorAll('#accessories span').forEach(span => {
-      if(span.textContent === accessory) span.classList.add('selected');
-    });
-  }
-  if(pet) {
-    document.querySelectorAll('#pets span').forEach(span => {
-      if(span.textContent === pet) span.classList.add('selected');
     });
   }
 };
@@ -114,39 +100,6 @@ function selectAvatar(selected) {
   });
 }
 
-function selectAccessory(selected) {
-  accessory = selected;
-  localStorage.setItem("accessory", accessory);
-  updateCharacterText();
-  document.getElementById("chosenAccessory").innerText =
-    "Valt tillbehör: " + (accessory || "Ingen");
-  
-  // Uppdatera visuell feedback
-  document.querySelectorAll('#accessories span').forEach(span => {
-    if(span.textContent === selected) {
-      span.classList.add('selected');
-    } else {
-      span.classList.remove('selected');
-    }
-  });
-}
-
-function selectPet(selected) {
-  pet = selected;
-  localStorage.setItem("pet", pet);
-  document.getElementById("chosenPet").innerText = "Ditt husdjur: " + pet;
-  updateCharacterText();
-  
-  // Uppdatera visuell feedback
-  document.querySelectorAll('#pets span').forEach(span => {
-    if(span.textContent === selected) {
-      span.classList.add('selected');
-    } else {
-      span.classList.remove('selected');
-    }
-  });
-}
-
 function selectTheme(selectedTheme) {
   theme = selectedTheme;
   localStorage.setItem("theme", theme);
@@ -161,7 +114,7 @@ function selectTheme(selectedTheme) {
 
 function applyTheme(selectedTheme) {
   const themes = {
-    default: "linear-gradient(135deg, #74ebd5, #acb6e5)",
+    default: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     space: "linear-gradient(135deg, #0f0c29, #302b63, #24243e)",
     sunset: "linear-gradient(135deg, #ff6e7f, #bfe9ff)",
     forest: "linear-gradient(135deg, #134e5e, #71b280)",
@@ -177,6 +130,9 @@ function startGame(mode) {
   gameMode = mode;
   if(mode.includes('easy')) level = 'easy';
   else if(mode.includes('medium')) level = 'medium';
+  else if(mode.includes('algebra')) level = 'algebra';
+  else if(mode.includes('percent')) level = 'percent';
+  else if(mode.includes('geometry')) level = 'geometry';
   else level = 'hard';
   
   // Nollställ inte streak om daglig utmaning är aktiv
@@ -207,39 +163,19 @@ function startGame(mode) {
 // AVATAR PERSONLIGHET & ANIMATION
 // =====================
 function avatarPersonality() {
-  if (avatar === "😺") return "😸 Rätt på!";
-  if (avatar === "🤖") return "Analyserar...";
-  if (avatar === "🐲") return "🔥 Utmana mig!";
-  if (avatar === "🦄") return "✨ Du klarar detta!";
-  if (avatar === "🧙‍♂️") return "📜 Visdom är makt!";
-  if (avatar === "🐧") return "❄️ Kul med kyla!";
-  if (avatar === "🐸") return "💚 Hoppar runt!";
-  if (avatar === "🦊") return "🦊 Listig som alltid!";
-  return "😄 Kör!";
+  if (avatar === "🧑") return "💪 Låt oss köra!";
+  if (avatar === "👨‍🎓" || avatar === "👩‍🎓") return "📚 Pluggar hårt!";
+  if (avatar === "🤓") return "🧠 Smart tänkande!";
+  if (avatar === "😎") return "✨ Häftigt!";
+  if (avatar === "🚀") return "🎯 Målinriktad!";
+  return "😄 Redo!";
 }
-
 function updateCharacterText() {
-  // Tillbehörsklass
-  let accessoryClass = "";
-  if(accessory === "⚔️") accessoryClass = "accessory-spin";
-  if(accessory === "🪄") accessoryClass = "accessory-glitter";
-  if(accessory === "🎩") accessoryClass = "accessory-blink";
-
-  // Avatar-animation
-  let avatarClass = "";
-  if(avatar === "😺" || avatar === "🐸") avatarClass = "avatar-jump";
-  if(avatar === "🐲" || avatar === "🦊" || avatar==="🤖") avatarClass = "avatar-sway";
-  if(avatar === "🦄" || avatar === "🧙‍♂️") avatarClass = "avatar-glitter";
-  if(avatar === "🐧") avatarClass = "avatar-sway";
-
   document.getElementById("character").innerHTML = `
-    <span class="${avatarClass}">${avatar}</span>
-    <span class="${accessoryClass}">${accessory}</span>
-    ${pet ? `<span class="pet-float">${pet}</span>` : ''}
+    <span>${avatar}</span>
     ${avatarPersonality()}
   `;
 }
-
 function cheer(success) {
   updateCharacterText();
   document.getElementById("character").innerText += success ? " 🎉 Grymt jobbat!!" : " 💪 Nästan rätt!";
@@ -523,6 +459,128 @@ function generateMath() {
     currentExplanation = `${a} × ${b} = ${correctAnswer}`;
     document.getElementById("question").innerText = `${a} × ${b} = ?`;
     hideMultipleChoice();
+    
+  } else if (level === "algebra") {
+    // ALGEBRA & EKVATIONER - inspirerat från Matteboken.se
+    const algebraProblems = [
+      { text: "📐 Lös ekvationen: x + 5 = 12. Vad är x?", answer: 7, type: "algebra", explanation: "x + 5 = 12. Vi subtraherar 5 från båda sidor: x = 12 - 5 = 7" },
+      { text: "📐 Lös: x - 3 = 10. Vad är x?", answer: 13, type: "algebra", explanation: "x - 3 = 10. Vi adderar 3 till båda sidor: x = 10 + 3 = 13" },
+      { text: "📐 Lös: 2x = 16. Vad är x?", answer: 8, type: "algebra", explanation: "2x = 16. Vi delar båda sidor med 2: x = 16 ÷ 2 = 8" },
+      { text: "📐 Lös: 3x = 21. Vad är x?", answer: 7, type: "algebra", explanation: "3x = 21. Vi delar båda sidor med 3: x = 21 ÷ 3 = 7" },
+      { text: "📐 Lös: x + 8 = 15. Vad är x?", answer: 7, type: "algebra", explanation: "x + 8 = 15. Vi subtraherar 8: x = 15 - 8 = 7" },
+      { text: "📐 Lös: x ÷ 4 = 5. Vad är x?", answer: 20, type: "algebra", explanation: "x ÷ 4 = 5. Vi multiplicerar båda sidor med 4: x = 5 × 4 = 20" },
+      { text: "📐 Lös: 2x + 3 = 11. Vad är x?", answer: 4, type: "algebra", explanation: "2x + 3 = 11. Först: 2x = 11 - 3 = 8. Sen: x = 8 ÷ 2 = 4" },
+      { text: "📐 Lös: 5x - 2 = 18. Vad är x?", answer: 4, type: "algebra", explanation: "5x - 2 = 18. Först: 5x = 18 + 2 = 20. Sen: x = 20 ÷ 5 = 4" },
+      { text: "📐 Om x + x = 18, vad är x?", answer: 9, type: "algebra", explanation: "x + x = 2x = 18. Vi delar med 2: x = 18 ÷ 2 = 9" },
+      { text: "📐 Lös: 4x = 36. Vad är x?", answer: 9, type: "algebra", explanation: "4x = 36. Vi delar båda sidor med 4: x = 36 ÷ 4 = 9" },
+      { text: "🔢 Vad är 2³ (2 upphöjt till 3)?", answer: 8, type: "potenser", explanation: "2³ = 2 × 2 × 2 = 8" },
+      { text: "🔢 Vad är 3² (3 upphöjt till 2)?", answer: 9, type: "potenser", explanation: "3² = 3 × 3 = 9" },
+      { text: "🔢 Vad är 5² (5 kvadrat)?", answer: 25, type: "potenser", explanation: "5² = 5 × 5 = 25" },
+      { text: "🔢 Vad är 10² (10 kvadrat)?", answer: 100, type: "potenser", explanation: "10² = 10 × 10 = 100" },
+      { text: "🔢 Vad är 4² (4 kvadrat)?", answer: 16, type: "potenser", explanation: "4² = 4 × 4 = 16" },
+      { text: "🔢 Vad är 2⁴ (2 upphöjt till 4)?", answer: 16, type: "potenser", explanation: "2⁴ = 2 × 2 × 2 × 2 = 16" },
+      { text: "🔢 Vad är 10³ (10 upphöjt till 3)?", answer: 1000, type: "potenser", explanation: "10³ = 10 × 10 × 10 = 1000" },
+      { text: "📏 Ett uttryck: 3a när a = 4. Vad blir uttrycket?", answer: 12, type: "algebra", explanation: "3a = 3 × a = 3 × 4 = 12" },
+      { text: "📏 Beräkna: 2b + 5 när b = 3. Vad blir det?", answer: 11, type: "algebra", explanation: "2b + 5 = 2 × 3 + 5 = 6 + 5 = 11" },
+      { text: "📏 Om x = 7, vad är x + 10?", answer: 17, type: "algebra", explanation: "x + 10 = 7 + 10 = 17" },
+      { text: "📐 Lös: x - 7 = 8. Vad är x?", answer: 15, type: "algebra", explanation: "x - 7 = 8. Vi adderar 7: x = 8 + 7 = 15" },
+      { text: "📐 Lös: 6x = 42. Vad är x?", answer: 7, type: "algebra", explanation: "6x = 42. Vi delar med 6: x = 42 ÷ 6 = 7" },
+      { text: "🔢 Vilket tal är 2⁵?", answer: 32, type: "potenser", explanation: "2⁵ = 2 × 2 × 2 × 2 × 2 = 32" },
+      { text: "📏 Om y = 12, vad är y ÷ 3?", answer: 4, type: "algebra", explanation: "y ÷ 3 = 12 ÷ 3 = 4" },
+      { text: "📐 Lös: 3x + 6 = 15. Vad är x?", answer: 3, type: "algebra", explanation: "3x + 6 = 15. Först: 3x = 15 - 6 = 9. Sen: x = 9 ÷ 3 = 3" }
+    ];
+    
+    const problem = algebraProblems[Math.floor(Math.random() * algebraProblems.length)];
+    correctAnswer = problem.answer;
+    currentQuestionType = problem.type;
+    currentExplanation = problem.explanation;
+    document.getElementById("question").innerText = problem.text;
+    
+    if(Math.random() > 0.5) {
+      generateMultipleChoice(problem.answer);
+    } else {
+      hideMultipleChoice();
+    }
+    
+  } else if (level === "percent") {
+    // PROCENT & BRÅK - från Matteboken.se högstadiet
+    const percentProblems = [
+      { text: "💯 Vad är 50% av 100?", answer: 50, type: "procent", explanation: "50% av 100 = 0.5 × 100 = 50" },
+      { text: "💯 Vad är 25% av 80?", answer: 20, type: "procent", explanation: "25% av 80 = 0.25 × 80 = 20" },
+      { text: "💯 Vad är 10% av 200?", answer: 20, type: "procent", explanation: "10% av 200 = 0.1 × 200 = 20" },
+      { text: "💯 En tröja kostar 200 kr. Du får 20% rabatt. Hur mycket är rabatten?", answer: 40, type: "procent", explanation: "20% av 200 = 0.2 × 200 = 40 kr" },
+      { text: "💯 Vad är 75% av 60?", answer: 45, type: "procent", explanation: "75% av 60 = 0.75 × 60 = 45" },
+      { text: "🍕 Vad är 1/2 (hälften) av 24?", answer: 12, type: "fractions", explanation: "1/2 av 24 = 24 ÷ 2 = 12" },
+      { text: "🍕 Vad är 1/4 av 20?", answer: 5, type: "fractions", explanation: "1/4 av 20 = 20 ÷ 4 = 5" },
+      { text: "🍕 Vad är 1/3 av 30?", answer: 10, type: "fractions", explanation: "1/3 av 30 = 30 ÷ 3 = 10" },
+      { text: "🍕 Vad är 2/4 (samma som 1/2) av 40?", answer: 20, type: "fractions", explanation: "2/4 = 1/2, så 1/2 av 40 = 20" },
+      { text: "🍕 Vad är 3/4 av 16?", answer: 12, type: "fractions", explanation: "1/4 av 16 = 4. Så 3/4 = 3 × 4 = 12" },
+      { text: "💯 En jacka kostar 400 kr. Den är nedsatt med 25%. Vad är rabatten?", answer: 100, type: "procent", explanation: "25% av 400 = 0.25 × 400 = 100 kr" },
+      { text: "💯 Du har 50 kr. Du sparar 50% mer. Hur mycket sparar du?", answer: 25, type: "procent", explanation: "50% av 50 = 0.5 × 50 = 25 kr mer" },
+      { text: "💯 Vad är 20% av 150?", answer: 30, type: "procent", explanation: "20% av 150 = 0.2 × 150 = 30" },
+      { text: "🍕 Vad är 1/5 av 50?", answer: 10, type: "fractions", explanation: "1/5 av 50 = 50 ÷ 5 = 10" },
+      { text: "🍕 Vad är 2/3 av 18?", answer: 12, type: "fractions", explanation: "1/3 av 18 = 6. Så 2/3 = 2 × 6 = 12" },
+      { text: "💯 Ett pris ökar från 100 kr till 120 kr. Hur många % är ökningen?", answer: 20, type: "procent", explanation: "Ökning = 20 kr. 20/100 = 0.2 = 20%" },
+      { text: "💯 Vad är 5% av 200?", answer: 10, type: "procent", explanation: "5% av 200 = 0.05 × 200 = 10" },
+      { text: "🍕 Vad är 3/5 av 25?", answer: 15, type: "fractions", explanation: "1/5 av 25 = 5. Så 3/5 = 3 × 5 = 15" },
+      { text: "💯 30% av eleverna är 12 st. Hur många elever totalt?", answer: 40, type: "procent", explanation: "30% = 12. Så 100% = 12 ÷ 0.3 = 40 elever" },
+      { text: "💯 Vad är 100% av 75?", answer: 75, type: "procent", explanation: "100% av något = hela värdet = 75" },
+      { text: "🍕 Om 1/2 är 8, vad är det hela?", answer: 16, type: "fractions", explanation: "Om hälften är 8, då är det hela 8 × 2 = 16" },
+      { text: "💯 Ett spel kostade 250 kr. Det är nedsatt 40%. Vad är rabatten?", answer: 100, type: "procent", explanation: "40% av 250 = 0.4 × 250 = 100 kr" },
+      { text: "🍕 Vad är 4/5 av 20?", answer: 16, type: "fractions", explanation: "1/5 av 20 = 4. Så 4/5 = 4 × 4 = 16" }
+    ];
+    
+    const problem = percentProblems[Math.floor(Math.random() * percentProblems.length)];
+    correctAnswer = problem.answer;
+    currentQuestionType = problem.type;
+    currentExplanation = problem.explanation;
+    document.getElementById("question").innerText = problem.text;
+    
+    if(Math.random() > 0.4) {
+      generateMultipleChoice(problem.answer);
+    } else {
+      hideMultipleChoice();
+    }
+    
+  } else if (level === "geometry") {
+    // GEOMETRI - area, omkrets, volym från Matteboken.se
+    const geometryProblems = [
+      { text: "📐 En kvadrat har sidan 5 cm. Vad är arean? (sida × sida)", answer: 25, type: "geometry", explanation: "Area = sida² = 5 × 5 = 25 cm²" },
+      { text: "📐 En rektangel är 8 cm lång och 3 cm bred. Vad är arean?", answer: 24, type: "geometry", explanation: "Area = längd × bredd = 8 × 3 = 24 cm²" },
+      { text: "📐 En kvadrat har sidan 6 cm. Vad är omkretsen? (alla sidor)", answer: 24, type: "geometry", explanation: "Omkrets = 6 + 6 + 6 + 6 = 24 cm" },
+      { text: "📐 En rektangel är 10 cm lång och 4 cm bred. Vad är omkretsen?", answer: 28, type: "geometry", explanation: "Omkrets = 10 + 4 + 10 + 4 = 28 cm" },
+      { text: "📐 Omkretsen av en kvadrat är 20 cm. Hur lång är en sida?", answer: 5, type: "geometry", explanation: "Omkrets = 4 × sida. Så sida = 20 ÷ 4 = 5 cm" },
+      { text: "📐 En cirkel har radien 5 cm. Vad är diametern?", answer: 10, type: "geometry", explanation: "Diameter = 2 × radie = 2 × 5 = 10 cm" },
+      { text: "📐 En triangel med bas 6 cm och höjd 4 cm. Area = (bas × höjd) ÷ 2. Vad är arean?", answer: 12, type: "geometry", explanation: "Area = (6 × 4) ÷ 2 = 24 ÷ 2 = 12 cm²" },
+      { text: "📐 En rektangel har arean 40 cm². Bredden är 5 cm. Vad är längden?", answer: 8, type: "geometry", explanation: "Area = längd × bredd. 40 = längd × 5. Längd = 40 ÷ 5 = 8 cm" },
+      { text: "📐 En kub har sidan 3 cm. Vad är volymen? (sida × sida × sida)", answer: 27, type: "geometry", explanation: "Volym = sida³ = 3 × 3 × 3 = 27 cm³" },
+      { text: "📐 En kvadrat har arean 36 cm². Hur lång är sidan?", answer: 6, type: "geometry", explanation: "Area = sida². Så sida = √36 = 6 cm" },
+      { text: "📐 En rektangel är 12 cm lång och 5 cm bred. Vad är arean?", answer: 60, type: "geometry", explanation: "Area = 12 × 5 = 60 cm²" },
+      { text: "📐 Omkretsen av en kvadrat är 32 cm. Hur lång är en sida?", answer: 8, type: "geometry", explanation: "Sida = omkrets ÷ 4 = 32 ÷ 4 = 8 cm" },
+      { text: "📐 En triangel har bas 10 cm och höjd 6 cm. Vad är arean?", answer: 30, type: "geometry", explanation: "Area = (bas × höjd) ÷ 2 = (10 × 6) ÷ 2 = 30 cm²" },
+      { text: "📐 En kub har sidan 4 cm. Vad är volymen?", answer: 64, type: "geometry", explanation: "Volym = 4³ = 4 × 4 × 4 = 64 cm³" },
+      { text: "📐 En kvadrat har sidan 7 cm. Vad är arean?", answer: 49, type: "geometry", explanation: "Area = 7² = 7 × 7 = 49 cm²" },
+      { text: "📐 En rektangel är 15 cm lång och 3 cm bred. Vad är arean?", answer: 45, type: "geometry", explanation: "Area = 15 × 3 = 45 cm²" },
+      { text: "📐 En kvadrat har sidan 10 cm. Vad är omkretsen?", answer: 40, type: "geometry", explanation: "Omkrets = 4 × 10 = 40 cm" },
+      { text: "📐 Omkretsen av en kvadrat är 28 cm. Hur lång är sidan?", answer: 7, type: "geometry", explanation: "Sida = 28 ÷ 4 = 7 cm" },
+      { text: "📐 En triangel med bas 8 cm och höjd 5 cm. Vad är arean?", answer: 20, type: "geometry", explanation: "Area = (8 × 5) ÷ 2 = 40 ÷ 2 = 20 cm²" },
+      { text: "📐 En kub har sidan 5 cm. Vad är volymen?", answer: 125, type: "geometry", explanation: "Volym = 5³ = 5 × 5 × 5 = 125 cm³" },
+      { text: "📐 En rektangel är 20 cm lång och 2 cm bred. Vad är arean?", answer: 40, type: "geometry", explanation: "Area = 20 × 2 = 40 cm²" },
+      { text: "📐 En kvadrat har arean 64 cm². Hur lång är sidan?", answer: 8, type: "geometry", explanation: "Sida = √64 = 8 cm" },
+      { text: "📐 En rektangel har längd 9 cm och bredd 4 cm. Vad är omkretsen?", answer: 26, type: "geometry", explanation: "Omkrets = 9 + 4 + 9 + 4 = 26 cm" }
+    ];
+    
+    const problem = geometryProblems[Math.floor(Math.random() * geometryProblems.length)];
+    correctAnswer = problem.answer;
+    currentQuestionType = problem.type;
+    currentExplanation = problem.explanation;
+    document.getElementById("question").innerText = problem.text;
+    
+    if(Math.random() > 0.4) {
+      generateMultipleChoice(problem.answer);
+    } else {
+      hideMultipleChoice();
+    }
   }
 }
 

@@ -8,43 +8,20 @@
 </head>
 <body>
 
-<h1>📘 Matte & Tid</h1>
+<h1>� MatteTraining</h1>
+<p style="color: white; font-size: 0.9em; margin-top: -5px;">Träna matematik från grundläggande till högstadiet | Inspirerat av <a href="https://www.matteboken.se/" target="_blank" style="color: #ffd700; text-decoration: none;">Matteboken.se</a></p>
 
 <h2>Välj din avatar</h2>
 <div id="avatars">
-  <button onclick="selectAvatar('😺')">😺 Katt</button>
-  <button onclick="selectAvatar('🐲')">🐲 Drake</button>
-  <button onclick="selectAvatar('🦄')">🦄 Enhörning</button>
-  <button onclick="selectAvatar('🧙‍♂️')">🧙‍♂️ Trollkarl</button>
-  <button onclick="selectAvatar('🤖')">🤖 Robot</button>
-  <button onclick="selectAvatar('🐧')">🐧 Pingvin</button>
-  <button onclick="selectAvatar('🐸')">🐸 Groda</button>
-  <button onclick="selectAvatar('🦊')">🦊 Räv</button>
+  <button onclick="selectAvatar('🧑')">🧑 Person</button>
+  <button onclick="selectAvatar('👨‍🎓')">👨‍🎓 Student</button>
+  <button onclick="selectAvatar('👩‍🎓')">👩‍🎓 Student</button>
+  <button onclick="selectAvatar('🤓')">🤓 Smart</button>
+  <button onclick="selectAvatar('😎')">😎 Cool</button>
+  <button onclick="selectAvatar('🚀')">🚀 Raket</button>
 </div>
 
 <p id="chosenAvatar"></p>
-
-<h3>Välj tillbehör</h3>
-<div id="accessories">
-  <span onclick="selectAccessory('🎩')">🎩</span>
-  <span onclick="selectAccessory('🕶️')">🕶️</span>
-  <span onclick="selectAccessory('⚔️')">⚔️</span>
-  <span onclick="selectAccessory('🪄')">🪄</span>
-</div>
-
-<p id="chosenAccessory">Valt tillbehör: Ingen</p>
-
-<h3>Välj husdjur</h3>
-<div id="pets">
-  <span onclick="selectPet('🐶')">🐶</span>
-  <span onclick="selectPet('🐱')">🐱</span>
-  <span onclick="selectPet('🐹')">🐹</span>
-  <span onclick="selectPet('🦜')">🦜</span>
-  <span onclick="selectPet('🐢')">🐢</span>
-  <span onclick="selectPet('🦎')">🦎</span>
-</div>
-
-<p id="chosenPet">Inget husdjur valt</p>
 
 <h3>Välj tema</h3>
 <div id="themes">
@@ -57,9 +34,12 @@
 
 <h3>Vad vill du träna på?</h3>
 <div id="menu">
-  <button onclick="startGame('math-easy')">🔢 Matte - Lätt</button>
-  <button onclick="startGame('math-medium')">🔢 Matte - Medel</button>
-  <button onclick="startGame('math-hard')">🔢 Matte - Svår</button>
+  <button onclick="startGame('math-easy')">🔢 Grundläggande (Åk 3-5)</button>
+  <button onclick="startGame('math-medium')">🔢 Mellanstadiet (Åk 6-7)</button>
+  <button onclick="startGame('math-hard')">🔢 Högstadiet (Åk 8-9)</button>
+  <button onclick="startGame('math-algebra')">📐 Algebra & Ekvationer</button>
+  <button onclick="startGame('math-percent')">💯 Procent & Bråk</button>
+  <button onclick="startGame('math-geometry')">📏 Geometri</button>
   <button onclick="startGame('clock-easy')">🕒 Klockan - Lätt</button>
   <button onclick="startGame('clock-medium')">🕒 Klockan - Medel</button>
   <button onclick="startGame('clock-hard')">🕒 Klockan - Svår</button>
