@@ -65,6 +65,42 @@ window.onload = () => {
 };
 
 // =====================
+// SPEL START
+// =====================
+function startGame(mode) {
+  gameMode = mode;
+  if(mode.includes('easy')) level = 'easy';
+  else if(mode.includes('medium')) level = 'medium';
+  else if(mode.includes('algebra')) level = 'algebra';
+  else if(mode.includes('percent')) level = 'percent';
+  else if(mode.includes('geometry')) level = 'geometry';
+  else level = 'hard';
+  
+  // Nollställ inte streak om daglig utmaning är aktiv
+  if(!isDailyChallengeActive) {
+    streak = 0;
+  }
+  
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game").classList.remove("hidden");
+  
+  // Visa rätt sektion baserat på läge
+  if(mode.startsWith('math')) {
+    document.getElementById("mathSection").classList.remove("hidden");
+    document.getElementById("clockSection").classList.add("hidden");
+    generateMath();
+  } else if(mode.startsWith('clock')) {
+    document.getElementById("clockSection").classList.remove("hidden");
+    document.getElementById("mathSection").classList.add("hidden");
+    generateTime();
+  }
+  
+  changeBackground();
+  questionStartTime = Date.now();
+  updatePowerupDisplay();
+}
+
+// =====================
 // MATTE & FRÅGOR
 // =====================
 function generateMath() {
